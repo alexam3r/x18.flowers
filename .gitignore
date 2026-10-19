@@ -1,0 +1,20 @@
+# PlatformIO build artifacts
+.pio/
+.pio-core/
+.pioenvs/
+.piolibdeps/
+.vscode/
+
+# Local secrets: never commit real credentials
+include/Secrets.h
+Secrets.h
+
+# Local agent memory / scratch files
+.remember/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Graphify incremental extraction cache
+graphify-out/cache/

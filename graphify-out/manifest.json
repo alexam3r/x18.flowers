@@ -1,0 +1,38 @@
+{
+  "docs/main.cpp": {
+    "mtime": 1792449245.4233437,
+    "seen": 1792449420.232772,
+    "ast_hash": "d7eba3472d45a00bf1f4f7d0772c4080",
+    "semantic_hash": ""
+  },
+  "include/Config.h": {
+    "mtime": 1792449252.3764894,
+    "seen": 1792449420.232778,
+    "ast_hash": "196199ccc5d5978c945644906e487e13",
+    "semantic_hash": ""
+  },
+  "src/Config.cpp": {
+    "mtime": 1792449240.9772503,
+    "seen": 1792449420.2327805,
+    "ast_hash": "0c64d40900ee5f129d6e896a3799044f",
+    "semantic_hash": ""
+  },
+  "src/main.cpp": {
+    "mtime": 1792449241.003251,
+    "seen": 1792449420.2327821,
+    "ast_hash": "03517ae0cf0a7b3a9fc64ec390bb5ec6",
+    "semantic_hash": ""
+  },
+  "PRD.md": {
+    "mtime": 1792447979.6488261,
+    "seen": 1792449420.2327833,
+    "ast_hash": "949eda874df2c6967e138a7c40aac9cf",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1792449220.1078131,
+    "seen": 1792449420.232784,
+    "ast_hash": "1df04642a94fa8018f14ff11762c5558",
+    "semantic_hash": ""
+  }
+}
