@@ -116,8 +116,11 @@ README обновляется при каждом изменении проши�
 │   └── test_cie1931.cpp    # Host-тесты кривой (Unity, native env)
 ├── docs/
 │   ├── main.cpp            # Исходный рабочий монолит (референс, секреты вырезаны)
-│   └── flowers.yaml        # HA-пакет MQTT: light/switch/number и Яндекс УД
+│   ├── flowers.yaml        # HA-пакет MQTT: light/switch/number и Яндекс УД
+│   └── HANDOFF.md          # Контекст для продолжения в другой среде
 ├── graphify-out/           # Граф зависимостей проекта
+├── AGENTS.md               # Правила для ИИ-агентов (Codex и др.)
+├── CLAUDE.md               # Точка входа для Claude Code
 ├── PRD.md                  # Исходное ТЗ
 └── platformio.ini
 ```
@@ -637,6 +640,16 @@ Glitch на разных уровнях яркости.
 
 ## 12. Журнал изменений
 
+### Передача проекта в другую среду
+
+- Добавлен `docs/HANDOFF.md`: архитектура, MQTT-контракт, принятые решения,
+  известные ограничения, чек-лист приёмки на железе и готовый промт для агента.
+- Добавлен `CLAUDE.md` для Claude Code; `AGENTS.md` ссылается на handoff.
+- В README добавлен раздел 13 с инструкцией `git clone` → `Secrets.h` →
+  `pio run`/`pio test`.
+- Сырой лог чата не коммитится: он содержит реальные учётные данные; контекст
+  экспортирован в очищенном виде.
+
 ### Исправление MQTT-эхо-петли панелей
 
 - Убрана публикация состояния полки в командный топик `panel_N`; состояние
@@ -747,3 +760,41 @@ Glitch на разных уровнях яркости.
 - `Config.h` / `Config.cpp`: константы и NVS (`fadeTime`, `interval`).
 - `docs/main.cpp` очищен от реальных учётных данных.
 - Первый граф graphify.
+
+---
+
+## 13. Перенос проекта в другую среду
+
+Проект полностью переносим: в GitHub лежит код, PlatformIO-конфигурация,
+документация, граф и HA-пакет. Машинозависимых путей и секретов в Git нет.
+
+```bash
+git clone git@github.com:alexam3r/x18.flowers.git
+cd x18.flowers
+
+cp include/Secrets.h.example include/Secrets.h
+$EDITOR include/Secrets.h        # заполнить Wi-Fi/MQTT
+
+pio run                          # платформа и библиотеки скачаются сами
+pio test -e native
+pio run -t upload
+```
+
+Что не лежит в Git и создаётся локально:
+
+- `include/Secrets.h` — реальные Wi-Fi/MQTT-учётки;
+- `.pio/`, `.pio-core/` — артефакты PlatformIO;
+- `.dsh/`, `.remember/` — локальное состояние агента;
+- `graphify-out/cache/` и датированные бэкапы graphify.
+
+Для продолжения в другом агенте:
+
+- **Claude Code** автоматически читает [`CLAUDE.md`](CLAUDE.md);
+- **Codex** читает [`AGENTS.md`](AGENTS.md);
+- оба ведут к [`docs/HANDOFF.md`](docs/HANDOFF.md) — сжатому контексту
+  проекта, решениям, известным проблемам и чек-листу приёмки;
+- [`docs/flowers.yaml`](docs/flowers.yaml) — готовый HA-пакет.
+
+Сырой лог чата в репозиторий не добавлен: в нём были реальные учётные данные.
+Экспорт контекста выполнен в очищенном виде через `docs/HANDOFF.md`,
+`README.md` и `AGENTS.md`.
