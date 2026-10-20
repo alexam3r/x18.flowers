@@ -1,9 +1,14 @@
-// Entry point. Block 1 only wires the configuration module; light, effects
-// and network modules are attached in the following blocks.
+// Entry point. Blocks 1-2 wire the configuration module and the five
+// individually controlled LED panels. Network and effects modules are
+// attached in the following blocks.
 
 #include <Arduino.h>
 
+#include "Cie1931.h"
 #include "Config.h"
+#include "LedPanel.h"
+
+LedPanel panels[cfg::kPanelCount];
 
 namespace {
 
@@ -20,6 +25,21 @@ void printBootInfo() {
   }
 }
 
+void printCieCheck() {
+  Serial.printf("CIE1931: 0%%=%u, 50%%=%u, 100%%=%u\n",
+                static_cast<unsigned>(cie1931::percentToDuty(0.0f)),
+                static_cast<unsigned>(cie1931::percentToDuty(50.0f)),
+                static_cast<unsigned>(cie1931::percentToDuty(100.0f)));
+}
+
+void initPanels() {
+  for (uint8_t i = 0; i < cfg::kPanelCount; ++i) {
+    if (!panels[i].begin(cfg::kPanelPins[i], static_cast<uint8_t>(i + 1))) {
+      Serial.printf("PANEL %u: init failed\n", static_cast<unsigned>(i + 1));
+    }
+  }
+}
+
 }  // namespace
 
 void setup() {
@@ -29,9 +49,13 @@ void setup() {
 
   config.begin();
   printBootInfo();
+  printCieCheck();
+  initPanels();
 }
 
 void loop() {
-  // Module dispatching is added in the next blocks.
-  delay(1000);
+  for (LedPanel& panel : panels) {
+    panel.update();
+  }
+  delay(1);
 }

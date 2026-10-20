@@ -1,16 +1,16 @@
 # Graph Report - flowers  (2026-10-20)
 
 ## Corpus Check
-- 6 files · ~5,595 words
+- 10 files · ~7,030 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 116 nodes · 161 edges · 10 communities (8 shown, 2 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.85)
+- 184 nodes · 246 edges · 13 communities (12 shown, 1 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 19 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ca0fa2fb`
+- Built from commit: `a949cf7a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,22 +23,28 @@
 - GlitchManager
 - WaveAnimation
 - SunriseManager
-- src/main.cpp
+- Cie1931.h
 - README.md
+- LedPanel
+- LedPanel.cpp
 
 ## God Nodes (most connected - your core abstractions)
-1. `LedPanel` - 22 edges
-2. `Config` - 15 edges
-3. `mqttCallback()` - 10 edges
-4. `loop()` - 10 edges
-5. `WaveAnimation` - 8 edges
-6. `GlitchManager` - 7 edges
-7. `РАЗДЕЛ 4. Поэтапный план рефакторинга (`write-plans`)` - 7 edges
-8. `updateGlitchManager()` - 6 edges
-9. `РАЗДЕЛ 2. Полное Техническое Задание (PRD)` - 6 edges
-10. `startWave()` - 5 edges
+1. `LedPanel` - 37 edges
+2. `LedPanel` - 22 edges
+3. `Config` - 15 edges
+4. `mqttCallback()` - 10 edges
+5. `loop()` - 10 edges
+6. `WaveAnimation` - 8 edges
+7. `GlitchManager` - 7 edges
+8. `РАЗДЕЛ 4. Поэтапный план рефакторинга (`write-plans`)` - 7 edges
+9. `updateGlitchManager()` - 6 edges
+10. `fadeTo` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `LedPanel::cancelBreathing()` --calls--> `fadeTo`  [INFERRED]
+  src/LedPanel.cpp → include/LedPanel.h
+- `LedPanel::startBreathing()` --calls--> `fadeTo`  [INFERRED]
+  src/LedPanel.cpp → include/LedPanel.h
 - `Config::resetToDefaults()` --calls--> `persistFloat`  [INFERRED]
   src/Config.cpp → include/Config.h
 - `Config::setFadeTimeSec()` --calls--> `persistFloat`  [INFERRED]
@@ -49,10 +55,10 @@
 ## Import Cycles
 - None detected.
 
-## Communities (10 total, 2 thin omitted)
+## Communities (13 total, 1 thin omitted)
 
 ### Community 0 - "Config"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Config, begin, persistFloat, _prefs, resetToDefaults, setFadeTimeSec, _settings, setWaveIntervalSec (+8 more)
 
 ### Community 1 - "docs/main.cpp"
@@ -83,21 +89,35 @@ Nodes (7): WaveAnimation, active, currentIndex, isBreathingWave, lastStepTime, s
 Cohesion: 0.50
 Nodes (4): SunriseManager, active, panelStarted, startTime
 
+### Community 8 - "Cie1931.h"
+Cohesion: 0.29
+Nodes (8): clampPercent(), dutyToPercent(), percentToDuty(), percentToLuminance(), initPanels(), printBootInfo(), printCieCheck(), setup()
+
+### Community 10 - "LedPanel"
+Cohesion: 0.06
+Nodes (23): LedPanel, begin, _breathDurationSec, _breathing, _breathPhaseDown, _brightnessChanged, _channel, consumeBrightnessChanged (+15 more)
+
+### Community 11 - "LedPanel.cpp"
+Cohesion: 0.18
+Nodes (13): applyPercent, cancelBreathing, fadeTo, writeDuty, LedPanel::applyPercent(), LedPanel::begin(), LedPanel::cancelBreathing(), LedPanel::fadeTo() (+5 more)
+
 ## Knowledge Gaps
-- **54 isolated node(s):** `_pin`, `_id`, `_channel`, `_currentDuty`, `_targetDuty` (+49 more)
+- **76 isolated node(s):** `_pin`, `_id`, `_channel`, `_currentDuty`, `_targetDuty` (+71 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
+- **Why does `LedPanel` connect `LedPanel` to `Config`, `LedPanel.cpp`?**
+  _High betweenness centrality (0.469) - this node is a cross-community bridge._
 - **Why does `LedPanel` connect `LedPanel` to `docs/main.cpp`?**
-  _High betweenness centrality (0.192) - this node is a cross-community bridge._
-- **Why does `WaveAnimation` connect `WaveAnimation` to `docs/main.cpp`?**
-  _High betweenness centrality (0.075) - this node is a cross-community bridge._
+  _High betweenness centrality (0.148) - this node is a cross-community bridge._
 - **What connects `_pin`, `_id`, `_channel` to the rest of the system?**
-  _54 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _76 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Config` be split into smaller, more focused modules?**
-  _Cohesion score 0.11594202898550725 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11 - nodes in this community are weakly interconnected._
 - **Should `LedPanel` be split into smaller, more focused modules?**
   _Cohesion score 0.10822510822510822 - nodes in this community are weakly interconnected._
+- **Should `LedPanel` be split into smaller, more focused modules?**
+  _Cohesion score 0.06060606060606061 - nodes in this community are weakly interconnected._
