@@ -5,6 +5,9 @@
 # Прошивка: x18.flowers (ESP32-C3 SuperMini).
 # MQTT-топики и состояния описаны в README.md.
 #
+# Проверено в Home Assistant и Yandex Smart Home (2026-10-20):
+# конфиг валиден, сущности работают.
+#
 # Сущности light/switch экспортируются в Яндекс Умный Дом.
 # Сущности number зависят от версии интеграции Yandex Smart Home
 # и могут быть доступны только в Home Assistant.
