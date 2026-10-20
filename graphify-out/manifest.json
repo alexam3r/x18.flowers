@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "src/main.cpp": {
-    "mtime": 1792474319.3353689,
-    "seen": 1792474394.4879296,
-    "ast_hash": "7d7233c92e7dab2db33b17e29744ff8e",
+    "mtime": 1792478135.9828155,
+    "seen": 1792478152.4223964,
+    "ast_hash": "44b11c8724971188e9fa98ec87c62a3a",
     "semantic_hash": ""
   },
   "PRD.md": {
@@ -30,9 +30,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792475180.4249773,
-    "seen": 1792475183.205858,
-    "ast_hash": "412269957be267c68e2b70ab4bb83a4b",
+    "mtime": 1792478174.083631,
+    "seen": 1792478211.4393234,
+    "ast_hash": "a48dfa6f5f44db6010f026d9334791b1",
     "semantic_hash": ""
   },
   "include/Cie1931.h": {
@@ -60,21 +60,33 @@
     "semantic_hash": ""
   },
   "include/NetworkManager.h": {
-    "mtime": 1792475047.5552309,
-    "seen": 1792475183.2058475,
-    "ast_hash": "811bd64e6cad63be7d6fcaf8fc415b1f",
+    "mtime": 1792478014.3432117,
+    "seen": 1792478152.422385,
+    "ast_hash": "d9a34a2ed66109a6ac5e781175ae12e8",
     "semantic_hash": ""
   },
   "src/NetworkManager.cpp": {
-    "mtime": 1792475091.5905654,
-    "seen": 1792475183.2058525,
-    "ast_hash": "681a6dd4699fe8b01cfd423d08018e26",
+    "mtime": 1792478135.9828155,
+    "seen": 1792478152.422394,
+    "ast_hash": "18240461fb423d0e70312b51868318a0",
     "semantic_hash": ""
   },
   "AGENTS.md": {
     "mtime": 1792474361.951188,
     "seen": 1792474394.487933,
     "ast_hash": "2c4a847d56aade02a3d84c1530455e3d",
+    "semantic_hash": ""
+  },
+  "include/EffectsManager.h": {
+    "mtime": 1792477998.4140568,
+    "seen": 1792478152.4223776,
+    "ast_hash": "4ce5075f3217c5db741ec260818ea1cc",
+    "semantic_hash": ""
+  },
+  "src/EffectsManager.cpp": {
+    "mtime": 1792478205.428302,
+    "seen": 1792478211.4393103,
+    "ast_hash": "df5e32caba580a913829a138345c62f4",
     "semantic_hash": ""
   }
 }

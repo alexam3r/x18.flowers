@@ -8,6 +8,7 @@
 #include "Config.h"
 
 class LedPanel;
+class EffectsManager;
 
 // The class is named FlowersNetworkManager because Arduino core 3.x already
 // defines a global NetworkManager in its Network library.
@@ -39,9 +40,13 @@ class FlowersNetworkManager {
   bool sunriseActive() const { return _sunriseActive; }
   void setSunriseActive(bool active) { _sunriseActive = active; }
 
+  // Effects engine owns group/sunrise command execution. Set once in setup().
+  void setEffectsManager(EffectsManager* effects) { _effects = effects; }
+
   // Publishes the JSON telemetry (retain=false) and group states (retain=true).
   void publishStatus();
   void publishGroupStates(bool force = false);
+  void publishSunriseState();
 
   // Retained state topics. Public so effects can report panel changes later.
   void publishPanelState(const LedPanel& panel);
@@ -69,6 +74,7 @@ class FlowersNetworkManager {
 
   LedPanel* _panels = nullptr;
   uint8_t _panelCount = 0;
+  EffectsManager* _effects = nullptr;
 
   IPAddress _brokerIp;
   bool _wifiConnected = false;

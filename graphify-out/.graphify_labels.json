@@ -8,7 +8,8 @@
   "6": "NetworkManager.cpp",
   "7": "x18.flowers — умный свет для цветочного стеллажа",
   "8": "test_cie1931.cpp",
-  "9": "SunriseManager",
+  "9": "EffectsManager",
   "10": "LedPanel",
-  "11": "LedPanel.cpp"
+  "11": "LedPanel.cpp",
+  "12": "EffectsManager.cpp"
 }

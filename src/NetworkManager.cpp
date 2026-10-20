@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "EffectsManager.h"
 #include "LedPanel.h"
 #include "Secrets.h"
 
@@ -275,6 +276,7 @@ void FlowersNetworkManager::publishAllStates() {
     publishPanelBrightness(_panels[i]);
   }
   publishGlobalBrightness();
+  publishSunriseState();
   publishGroupStates(true);
   publishStatus();
 }
@@ -317,6 +319,13 @@ void FlowersNetworkManager::publishGlobalBrightness() {
   char payload[8];
   std::snprintf(payload, sizeof(payload), "%d", _globalBrightnessPercent);
   _mqtt.publish(cfg::kTopicBrightnessState, payload, true);
+}
+
+void FlowersNetworkManager::publishSunriseState() {
+  if (!_mqtt.connected()) {
+    return;
+  }
+  _mqtt.publish(cfg::kTopicSunriseState, _sunriseActive ? "ON" : "OFF", true);
 }
 
 void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
@@ -382,10 +391,43 @@ void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
   } else if (suffix == "config/reboot") {
     handleReboot(message);
   } else if (suffix == "fullLight" || suffix == "topLight" ||
-             suffix == "bottomLight" || suffix == "sunrise" ||
-             suffix == "startWave") {
-    Serial.printf("MQTT: %s will be handled by the effects block\n",
-                  suffix.c_str());
+             suffix == "bottomLight") {
+    if (_effects == nullptr) {
+      return;
+    }
+    bool on = false;
+    if (message == "ON") {
+      on = true;
+    } else if (message == "OFF") {
+      on = false;
+    } else {
+      Serial.printf("MQTT: invalid %s payload '%s'\n", suffix.c_str(),
+                    message.c_str());
+      return;
+    }
+
+    if (suffix == "fullLight") {
+      _effects->setFullLight(on);
+    } else if (suffix == "topLight") {
+      _effects->setTopLight(on);
+    } else {
+      _effects->setBottomLight(on);
+    }
+  } else if (suffix == "sunrise") {
+    if (_effects == nullptr) {
+      return;
+    }
+    if (message == "ON") {
+      if (!_effects->startSunrise()) {
+        Serial.println("EFFECTS: sunrise not started");
+      }
+    } else if (message == "OFF") {
+      _effects->stopSunrise();
+    } else {
+      Serial.printf("MQTT: invalid sunrise payload '%s'\n", message.c_str());
+    }
+  } else if (suffix == "startWave") {
+    Serial.println("MQTT: startWave will be handled in Block 6");
   }
 }
 
@@ -409,6 +451,9 @@ void FlowersNetworkManager::handlePanelPower(LedPanel& panel,
 
   Serial.printf("MQTT: panel_%u -> %s\n", static_cast<unsigned>(panel.id()),
                 requested ? "ON" : "OFF");
+  if (_effects != nullptr) {
+    _effects->onManualOverride();
+  }
   panel.setOn(requested, config.fadeTimeSec());
   publishPanelState(panel);
   publishGroupStates();
@@ -431,6 +476,9 @@ void FlowersNetworkManager::handlePanelBrightness(LedPanel& panel,
 
   Serial.printf("MQTT: panel_%u brightness -> %d%%\n",
                 static_cast<unsigned>(panel.id()), value);
+  if (_effects != nullptr) {
+    _effects->onManualOverride();
+  }
   panel.setBrightnessPercent(static_cast<float>(value), config.fadeTimeSec());
   publishPanelBrightness(panel);
 }
@@ -458,6 +506,9 @@ void FlowersNetworkManager::handleGlobalBrightness(const String& message) {
   }
 
   Serial.printf("MQTT: global brightness -> %d%%\n", value);
+  if (_effects != nullptr) {
+    _effects->onManualOverride();
+  }
   setGlobalBrightnessPercent(value);
   for (uint8_t i = 0; i < _panelCount; ++i) {
     _panels[i].setBrightnessPercent(static_cast<float>(value),
