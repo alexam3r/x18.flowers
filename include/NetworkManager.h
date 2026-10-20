@@ -40,6 +40,9 @@ class FlowersNetworkManager {
   bool sunriseActive() const { return _sunriseActive; }
   void setSunriseActive(bool active) { _sunriseActive = active; }
 
+  bool startWaveActive() const { return _startWaveActive; }
+  void setStartWaveActive(bool active) { _startWaveActive = active; }
+
   // Effects engine owns group/sunrise command execution. Set once in setup().
   void setEffectsManager(EffectsManager* effects) { _effects = effects; }
 
@@ -47,6 +50,7 @@ class FlowersNetworkManager {
   void publishStatus();
   void publishGroupStates(bool force = false);
   void publishSunriseState();
+  void publishStartWaveState();
 
   // Retained state topics. Public so effects can report panel changes later.
   void publishPanelState(const LedPanel& panel);
@@ -82,6 +86,7 @@ class FlowersNetworkManager {
 
   int _globalBrightnessPercent = cfg::kDefaultBrightnessPercent;
   bool _sunriseActive = false;
+  bool _startWaveActive = false;
 
   unsigned long _lastMqttAttemptMs = 0;
   unsigned long _lastWifiReconnectMs = 0;

@@ -277,6 +277,7 @@ void FlowersNetworkManager::publishAllStates() {
   }
   publishGlobalBrightness();
   publishSunriseState();
+  publishStartWaveState();
   publishGroupStates(true);
   publishStatus();
 }
@@ -326,6 +327,14 @@ void FlowersNetworkManager::publishSunriseState() {
     return;
   }
   _mqtt.publish(cfg::kTopicSunriseState, _sunriseActive ? "ON" : "OFF", true);
+}
+
+void FlowersNetworkManager::publishStartWaveState() {
+  if (!_mqtt.connected()) {
+    return;
+  }
+  _mqtt.publish(cfg::kTopicStartWaveState, _startWaveActive ? "ON" : "OFF",
+                true);
 }
 
 void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
@@ -427,7 +436,14 @@ void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
       Serial.printf("MQTT: invalid sunrise payload '%s'\n", message.c_str());
     }
   } else if (suffix == "startWave") {
-    Serial.println("MQTT: startWave will be handled in Block 6");
+    if (_effects == nullptr) {
+      return;
+    }
+    if (_effects->startBreathingWave()) {
+      Serial.println("EFFECTS: manual breathing wave started");
+    } else {
+      Serial.println("EFFECTS: breathing wave not started");
+    }
   }
 }
 

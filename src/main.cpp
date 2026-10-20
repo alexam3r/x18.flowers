@@ -1,6 +1,6 @@
-// Entry point. Blocks 1-5 wire configuration, the five LED panels, the
-// network layer and the effects engine (cascades + sunrise).
-// Breathing/glitch are attached in Block 6.
+// Entry point. The firmware is fully modular: configuration, five LED panels,
+// the Wi-Fi/MQTT layer and the effects engine (cascades, sunrise, breathing,
+// glitch). setup() initialises; loop() only dispatches updates.
 
 #include <Arduino.h>
 
