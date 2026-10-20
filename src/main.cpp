@@ -1,14 +1,16 @@
-// Entry point. Blocks 1-2 wire the configuration module and the five
-// individually controlled LED panels. Network and effects modules are
-// attached in the following blocks.
+// Entry point. Blocks 1-3 wire the configuration module, the five
+// individually controlled LED panels and the network/telemetry layer.
+// Command routing and effects are attached in the following blocks.
 
 #include <Arduino.h>
 
 #include "Cie1931.h"
 #include "Config.h"
 #include "LedPanel.h"
+#include "NetworkManager.h"
 
 LedPanel panels[cfg::kPanelCount];
+FlowersNetworkManager network;
 
 namespace {
 
@@ -51,11 +53,13 @@ void setup() {
   printBootInfo();
   printCieCheck();
   initPanels();
+  network.begin(panels, cfg::kPanelCount);
 }
 
 void loop() {
   for (LedPanel& panel : panels) {
     panel.update();
   }
+  network.update();
   delay(1);
 }

@@ -1,15 +1,13 @@
 {
   "0": "Config",
   "1": "docs/main.cpp",
-  "2": "LedPanel",
+  "2": "FlowersNetworkManager",
   "3": "РАЗДЕЛ 2. Полное Техническое Задание (PRD)",
-  "4": "РАЗДЕЛ 4. Поэтапный план рефакторинга (`write-plans`)",
+  "4": "PRD.md",
   "5": "GlitchManager",
   "6": "WaveAnimation",
-  "7": "SunriseManager",
-  "8": "Cie1931.h",
-  "9": "README.md",
+  "7": "x18.flowers — умный свет для цветочного стеллажа",
+  "8": "test_cie1931.cpp",
   "10": "LedPanel",
-  "11": "LedPanel.cpp",
-  "12": "test_cie1931.cpp"
+  "11": "LedPanel.cpp"
 }
