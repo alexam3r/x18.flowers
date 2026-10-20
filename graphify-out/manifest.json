@@ -30,9 +30,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792479355.1658127,
-    "seen": 1792479368.075686,
-    "ast_hash": "e35727d8841f65f5c340dca46c9ec71a",
+    "mtime": 1792495055.0580854,
+    "seen": 1792495120.2210774,
+    "ast_hash": "bb8df3b77737ce5dbaf7ff7dbded7766",
     "semantic_hash": ""
   },
   "include/Cie1931.h": {
@@ -66,15 +66,15 @@
     "semantic_hash": ""
   },
   "src/NetworkManager.cpp": {
-    "mtime": 1792479253.3675413,
-    "seen": 1792479333.7313316,
-    "ast_hash": "20cf5f7711f1d71d511776be7af46e08",
+    "mtime": 1792495001.3557575,
+    "seen": 1792495120.22092,
+    "ast_hash": "1746f0ec01dcbe57a381805652db6ca8",
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792474361.951188,
-    "seen": 1792474394.487933,
-    "ast_hash": "2c4a847d56aade02a3d84c1530455e3d",
+    "mtime": 1792495074.211617,
+    "seen": 1792495120.221025,
+    "ast_hash": "dbc15b8769d3caa886e9d54a5ab296db",
     "semantic_hash": ""
   },
   "include/EffectsManager.h": {
@@ -87,6 +87,30 @@
     "mtime": 1792479253.3675413,
     "seen": 1792479333.7313287,
     "ast_hash": "29edb30c9f4c52ba4ca2ee0c6be26673",
+    "semantic_hash": ""
+  },
+  "docs/convert_json.js": {
+    "mtime": 1792495112.0994139,
+    "seen": 1792495120.220281,
+    "ast_hash": "ad5b38f5506eac5d93a771ab672e05ad",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1792495071.7380064,
+    "seen": 1792495120.2210283,
+    "ast_hash": "e5cd0d8567b6c0f62f0b50b9c659fac4",
+    "semantic_hash": ""
+  },
+  "docs/HANDOFF.md": {
+    "mtime": 1792495081.7976575,
+    "seen": 1792495120.22108,
+    "ast_hash": "59c905bd180c1023823f570aef16aa0a",
+    "semantic_hash": ""
+  },
+  "docs/flowers.yaml": {
+    "mtime": 1792489751.6174495,
+    "seen": 1792495120.2210822,
+    "ast_hash": "c52ac7632cb76693d13291d33864cb97",
     "semantic_hash": ""
   }
 }

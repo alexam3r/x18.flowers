@@ -255,10 +255,16 @@ void FlowersNetworkManager::publishStatus() {
 
   doc["brightness"] = _globalBrightnessPercent;
 
+  // Each panel carries both its logical state and its own brightness
+  // setpoint. The setpoint is kept while the panel is off, which is exactly
+  // what the next ON restores; it is not the instantaneous fade/PWM level.
   JsonObject panelsBlock = doc["panels"].to<JsonObject>();
   for (uint8_t i = 0; i < _panelCount; ++i) {
     char key[3] = {'p', static_cast<char>('1' + i), '\0'};
-    panelsBlock[key] = _panels[i].isOn() ? "ON" : "OFF";
+    JsonObject panelBlock = panelsBlock[key].to<JsonObject>();
+    panelBlock["state"] = _panels[i].isOn() ? "ON" : "OFF";
+    panelBlock["brightness"] =
+        static_cast<int>(std::lroundf(_panels[i].brightnessPercent()));
   }
 
   String payload;

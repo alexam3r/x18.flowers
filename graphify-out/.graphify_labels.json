@@ -7,10 +7,13 @@
   "5": "GlitchManager",
   "6": "NetworkManager.cpp",
   "7": "x18.flowers — умный свет для цветочного стеллажа",
-  "8": "src/main.cpp",
+  "8": "test_cie1931.cpp",
   "9": "EffectsManager",
   "10": "LedPanel",
   "11": "LedPanel.cpp",
   "12": "EffectsManager.cpp",
-  "13": "BreathingWave"
+  "13": "Handoff: x18.flowers",
+  "14": "РАЗДЕЛ 2. Полное Техническое Задание (PRD)",
+  "15": "convert_json.js",
+  "16": "9. Сборка, прошивка, тесты"
 }
