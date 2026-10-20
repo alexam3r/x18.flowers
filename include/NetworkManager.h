@@ -43,12 +43,26 @@ class FlowersNetworkManager {
   void publishStatus();
   void publishGroupStates(bool force = false);
 
+  // Retained state topics. Public so effects can report panel changes later.
+  void publishPanelState(const LedPanel& panel);
+  void publishPanelBrightness(const LedPanel& panel);
+  void publishGlobalBrightness();
+
  private:
   bool connectWifi();
   void resolveBroker();
   void maybeReconnectWifi();
   void tryConnectMqtt();
   void checkWatchdog();
+
+  void publishAllStates();
+  void handleMessage(char* topic, uint8_t* payload, unsigned int length);
+  void handlePanelPower(LedPanel& panel, const String& message);
+  void handlePanelBrightness(LedPanel& panel, const String& message);
+  void handleGlobalBrightness(const String& message);
+  void handleFadeTime(const String& message);
+  void handleInterval(const String& message);
+  void handleReboot(const String& message);
 
   WiFiClient _wifiClient;
   PubSubClient _mqtt;

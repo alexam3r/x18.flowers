@@ -5,9 +5,10 @@
   "3": "РАЗДЕЛ 2. Полное Техническое Задание (PRD)",
   "4": "PRD.md",
   "5": "GlitchManager",
-  "6": "WaveAnimation",
+  "6": "NetworkManager.cpp",
   "7": "x18.flowers — умный свет для цветочного стеллажа",
   "8": "test_cie1931.cpp",
+  "9": "SunriseManager",
   "10": "LedPanel",
   "11": "LedPanel.cpp"
 }

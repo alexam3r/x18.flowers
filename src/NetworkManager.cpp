@@ -3,6 +3,11 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "LedPanel.h"
 #include "Secrets.h"
 
@@ -11,6 +16,20 @@ constexpr unsigned long kMqttRetryIntervalMs = 5000;
 constexpr unsigned long kWifiReconnectIntervalMs = 10000;
 constexpr uint16_t kMqttBufferSize = 512;
 constexpr uint16_t kMqttSocketTimeoutSec = 2;
+
+bool parseLong(const String& text, long& value) {
+  if (text.length() == 0) return false;
+  char* end = nullptr;
+  value = std::strtol(text.c_str(), &end, 10);
+  return end != text.c_str() && end != nullptr && *end == '\0';
+}
+
+bool parseFloat(const String& text, float& value) {
+  if (text.length() == 0) return false;
+  char* end = nullptr;
+  value = std::strtof(text.c_str(), &end);
+  return end != text.c_str() && end != nullptr && *end == '\0';
+}
 }  // namespace
 
 FlowersNetworkManager::FlowersNetworkManager() : _mqtt(_wifiClient) {}
@@ -21,6 +40,9 @@ bool FlowersNetworkManager::begin(LedPanel* panels, uint8_t panelCount) {
 
   _mqtt.setBufferSize(kMqttBufferSize);
   _mqtt.setSocketTimeout(kMqttSocketTimeoutSec);
+  _mqtt.setCallback([this](char* topic, uint8_t* payload, unsigned int length) {
+    handleMessage(topic, payload, length);
+  });
 
   _lastConnectionMs = millis();
   _lastTelemetryMs = millis();
@@ -157,8 +179,7 @@ void FlowersNetworkManager::tryConnectMqtt() {
   }
 
   _firstRunStatus = true;
-  publishGroupStates(true);
-  publishStatus();
+  publishAllStates();
   _lastTelemetryMs = millis();
 }
 
@@ -242,4 +263,253 @@ void FlowersNetworkManager::publishStatus() {
   String payload;
   serializeJson(doc, payload);
   _mqtt.publish(cfg::kTopicStatus, payload.c_str(), false);
+}
+
+void FlowersNetworkManager::publishAllStates() {
+  if (!_mqtt.connected() || _panels == nullptr) {
+    return;
+  }
+
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    publishPanelState(_panels[i]);
+    publishPanelBrightness(_panels[i]);
+  }
+  publishGlobalBrightness();
+  publishGroupStates(true);
+  publishStatus();
+}
+
+void FlowersNetworkManager::publishPanelState(const LedPanel& panel) {
+  if (!_mqtt.connected()) {
+    return;
+  }
+
+  const String compatTopic =
+      String(cfg::kTopicPanelPrefix) + String(panel.id());
+  const String stateTopic =
+      compatTopic + String(cfg::kTopicPanelStateSuffix);
+  const char* payload = panel.isOn() ? "ON" : "OFF";
+
+  _mqtt.publish(stateTopic.c_str(), payload, true);
+  // Backward compatibility with the running firmware: panel_N also carries
+  // the state. This is exactly why the anti-echo check on panel_N is needed.
+  _mqtt.publish(compatTopic.c_str(), payload, true);
+}
+
+void FlowersNetworkManager::publishPanelBrightness(const LedPanel& panel) {
+  if (!_mqtt.connected()) {
+    return;
+  }
+
+  const String topic = String(cfg::kTopicPanelPrefix) + String(panel.id()) +
+                       String(cfg::kTopicPanelBrightnessStateSuffix);
+  char payload[8];
+  std::snprintf(payload, sizeof(payload), "%d",
+                static_cast<int>(std::lroundf(panel.brightnessPercent())));
+  _mqtt.publish(topic.c_str(), payload, true);
+}
+
+void FlowersNetworkManager::publishGlobalBrightness() {
+  if (!_mqtt.connected()) {
+    return;
+  }
+
+  char payload[8];
+  std::snprintf(payload, sizeof(payload), "%d", _globalBrightnessPercent);
+  _mqtt.publish(cfg::kTopicBrightnessState, payload, true);
+}
+
+void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
+                                          unsigned int length) {
+  if (topic == nullptr || _panels == nullptr) {
+    return;
+  }
+
+  String message;
+  if (payload != nullptr) {
+    message.reserve(length);
+    for (unsigned int i = 0; i < length; ++i) {
+      message += static_cast<char>(payload[i]);
+    }
+  }
+  message.trim();
+
+  const String topicStr(topic);
+  const String base(cfg::kTopicBase);
+  if (!topicStr.startsWith(base)) {
+    return;
+  }
+
+  const String suffix = topicStr.substring(base.length());
+
+  if (suffix.startsWith("panel_")) {
+    unsigned int pos = 6;  // strlen("panel_")
+    long panelNumber = 0;
+    bool hasDigits = false;
+
+    while (pos < suffix.length() && suffix[pos] >= '0' && suffix[pos] <= '9') {
+      panelNumber = panelNumber * 10 + (suffix[pos] - '0');
+      ++pos;
+      hasDigits = true;
+      if (panelNumber > _panelCount) {
+        return;  // also prevents integer overflow on hostile topics
+      }
+    }
+
+    if (!hasDigits || panelNumber < 1) {
+      return;
+    }
+
+    LedPanel& panel = _panels[panelNumber - 1];
+    const String rest = suffix.substring(pos);
+
+    if (rest.length() == 0) {
+      handlePanelPower(panel, message);
+    } else if (rest == "/brightness") {
+      handlePanelBrightness(panel, message);
+    }
+    // panel_N_state, panel_N/brightness_state and unknown panel subtopics
+    // are either our own retained state or unsupported commands.
+    return;
+  }
+
+  if (suffix == "brightness") {
+    handleGlobalBrightness(message);
+  } else if (suffix == "config/fadeTime") {
+    handleFadeTime(message);
+  } else if (suffix == "config/interval") {
+    handleInterval(message);
+  } else if (suffix == "config/reboot") {
+    handleReboot(message);
+  } else if (suffix == "fullLight" || suffix == "topLight" ||
+             suffix == "bottomLight" || suffix == "sunrise" ||
+             suffix == "startWave") {
+    Serial.printf("MQTT: %s will be handled by the effects block\n",
+                  suffix.c_str());
+  }
+}
+
+void FlowersNetworkManager::handlePanelPower(LedPanel& panel,
+                                             const String& message) {
+  bool requested;
+  if (message == "ON") {
+    requested = true;
+  } else if (message == "OFF") {
+    requested = false;
+  } else {
+    Serial.printf("MQTT: invalid panel payload '%s'\n", message.c_str());
+    return;
+  }
+
+  // Anti-echo: panel_N also carries retained state, so our own publication
+  // comes straight back. Same target state means there is nothing to do.
+  if (panel.isOn() == requested) {
+    return;
+  }
+
+  Serial.printf("MQTT: panel_%u -> %s\n", static_cast<unsigned>(panel.id()),
+                requested ? "ON" : "OFF");
+  panel.setOn(requested, config.fadeTimeSec());
+  publishPanelState(panel);
+  publishGroupStates();
+}
+
+void FlowersNetworkManager::handlePanelBrightness(LedPanel& panel,
+                                                  const String& message) {
+  long requested = 0;
+  if (!parseLong(message, requested) ||
+      requested < cfg::kMinBrightnessPercent ||
+      requested > cfg::kMaxBrightnessPercent) {
+    Serial.printf("MQTT: invalid panel brightness '%s'\n", message.c_str());
+    return;
+  }
+
+  const int value = static_cast<int>(requested);
+  if (static_cast<int>(std::lroundf(panel.brightnessPercent())) == value) {
+    return;  // anti-echo / already at this target
+  }
+
+  Serial.printf("MQTT: panel_%u brightness -> %d%%\n",
+                static_cast<unsigned>(panel.id()), value);
+  panel.setBrightnessPercent(static_cast<float>(value), config.fadeTimeSec());
+  publishPanelBrightness(panel);
+}
+
+void FlowersNetworkManager::handleGlobalBrightness(const String& message) {
+  long requested = 0;
+  if (!parseLong(message, requested) ||
+      requested < cfg::kMinBrightnessPercent ||
+      requested > cfg::kMaxBrightnessPercent) {
+    Serial.printf("MQTT: invalid global brightness '%s'\n", message.c_str());
+    return;
+  }
+
+  const int value = static_cast<int>(requested);
+
+  bool allMatch = (_globalBrightnessPercent == value);
+  for (uint8_t i = 0; i < _panelCount && allMatch; ++i) {
+    if (static_cast<int>(std::lroundf(_panels[i].brightnessPercent())) !=
+        value) {
+      allMatch = false;
+    }
+  }
+  if (allMatch) {
+    return;
+  }
+
+  Serial.printf("MQTT: global brightness -> %d%%\n", value);
+  setGlobalBrightnessPercent(value);
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    _panels[i].setBrightnessPercent(static_cast<float>(value),
+                                    config.fadeTimeSec());
+    // Keep the retained per-panel brightness in sync with the global command.
+    publishPanelBrightness(_panels[i]);
+  }
+  publishGlobalBrightness();
+}
+
+void FlowersNetworkManager::handleFadeTime(const String& message) {
+  float value = 0.0f;
+  if (!parseFloat(message, value) || !Config::isValidFadeTime(value)) {
+    Serial.printf("MQTT: invalid fadeTime '%s'\n", message.c_str());
+    return;
+  }
+  if (std::fabs(value - config.fadeTimeSec()) < 0.001f) {
+    return;
+  }
+  if (!config.setFadeTimeSec(value)) {
+    Serial.println("CONFIG: failed to save fadeTime");
+    return;
+  }
+
+  Serial.printf("CONFIG: fadeTime=%.2f s\n", value);
+  publishStatus();
+}
+
+void FlowersNetworkManager::handleInterval(const String& message) {
+  float value = 0.0f;
+  if (!parseFloat(message, value) || !Config::isValidWaveInterval(value)) {
+    Serial.printf("MQTT: invalid interval '%s'\n", message.c_str());
+    return;
+  }
+  if (std::fabs(value - config.waveIntervalSec()) < 0.001f) {
+    return;
+  }
+  if (!config.setWaveIntervalSec(value)) {
+    Serial.println("CONFIG: failed to save interval");
+    return;
+  }
+
+  Serial.printf("CONFIG: interval=%.2f s\n", value);
+  publishStatus();
+}
+
+void FlowersNetworkManager::handleReboot(const String& message) {
+  if (message != "ON") {
+    return;
+  }
+  Serial.println("MQTT: reboot requested");
+  publishStatus();
+  delay(500);
+  ESP.restart();
 }
