@@ -537,6 +537,16 @@ graphify update .
 Готовый HA-пакет лежит в [`docs/flowers.yaml`](docs/flowers.yaml). Это
 `mqtt:`-секция для `packages`/`configuration.yaml`.
 
+> **Важно:** `panel_N_state`, `panel_N/brightness_state` и `brightness_state`
+> публикует только новая прошивка. Старый монолит отдаёт состояние полки
+> только в `panel_N` и не публикует brightness-состояния вообще. Если в HA
+> светильники полок показывают «assumed state» и нет яркости — сначала
+> прошейте актуальную прошивку.
+
+> Стандартная entities-карточка не показывает слайдер яркости для `light`
+> (в отличие от `number`). Для ползунков используйте tile-карточку с
+> `features: [type: light-brightness]` или стандартную `light`-карточку.
+
 Сущности:
 
 - **`light`** — «Весь стеллаж» (глобальная яркость) и пять полок
