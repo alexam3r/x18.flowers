@@ -287,16 +287,17 @@ void FlowersNetworkManager::publishPanelState(const LedPanel& panel) {
     return;
   }
 
-  const String compatTopic =
-      String(cfg::kTopicPanelPrefix) + String(panel.id());
-  const String stateTopic =
-      compatTopic + String(cfg::kTopicPanelStateSuffix);
+  const String stateTopic = String(cfg::kTopicPanelPrefix) +
+                            String(panel.id()) +
+                            String(cfg::kTopicPanelStateSuffix);
   const char* payload = panel.isOn() ? "ON" : "OFF";
 
   _mqtt.publish(stateTopic.c_str(), payload, true);
-  // Backward compatibility with the running firmware: panel_N also carries
-  // the state. This is exactly why the anti-echo check on panel_N is needed.
-  _mqtt.publish(compatTopic.c_str(), payload, true);
+
+  // Do NOT mirror the state to panel_N: panel_N is the command topic. When an
+  // effect stop published OFF for all panels and a manual ON followed in the
+  // same callback, the delayed OFF echo arrived after ON (and vice versa),
+  // turning the shelf into a self-sustaining ON/OFF loop.
 }
 
 void FlowersNetworkManager::publishPanelBrightness(const LedPanel& panel) {
