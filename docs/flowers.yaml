@@ -22,7 +22,6 @@ mqtt:
       brightness_state_topic: "home/flat7/flowers/brightness_state"
       brightness_command_topic: "home/flat7/flowers/brightness"
       brightness_scale: 100
-      supported_color_modes: ["brightness"]
       payload_on: "ON"
       payload_off: "OFF"
       icon: "mdi:lightbulb-group"
@@ -43,7 +42,6 @@ mqtt:
       brightness_state_topic: "home/flat7/flowers/panel_1/brightness_state"
       brightness_command_topic: "home/flat7/flowers/panel_1/brightness"
       brightness_scale: 100
-      supported_color_modes: ["brightness"]
       payload_on: "ON"
       payload_off: "OFF"
       icon: "mdi:lightbulb"
@@ -56,7 +54,6 @@ mqtt:
       brightness_state_topic: "home/flat7/flowers/panel_2/brightness_state"
       brightness_command_topic: "home/flat7/flowers/panel_2/brightness"
       brightness_scale: 100
-      supported_color_modes: ["brightness"]
       payload_on: "ON"
       payload_off: "OFF"
       icon: "mdi:lightbulb"
@@ -69,7 +66,6 @@ mqtt:
       brightness_state_topic: "home/flat7/flowers/panel_3/brightness_state"
       brightness_command_topic: "home/flat7/flowers/panel_3/brightness"
       brightness_scale: 100
-      supported_color_modes: ["brightness"]
       payload_on: "ON"
       payload_off: "OFF"
       icon: "mdi:lightbulb"
@@ -82,7 +78,6 @@ mqtt:
       brightness_state_topic: "home/flat7/flowers/panel_4/brightness_state"
       brightness_command_topic: "home/flat7/flowers/panel_4/brightness"
       brightness_scale: 100
-      supported_color_modes: ["brightness"]
       payload_on: "ON"
       payload_off: "OFF"
       icon: "mdi:lightbulb"
@@ -95,7 +90,6 @@ mqtt:
       brightness_state_topic: "home/flat7/flowers/panel_5/brightness_state"
       brightness_command_topic: "home/flat7/flowers/panel_5/brightness"
       brightness_scale: 100
-      supported_color_modes: ["brightness"]
       payload_on: "ON"
       payload_off: "OFF"
       icon: "mdi:lightbulb"
