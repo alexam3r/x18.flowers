@@ -11,6 +11,7 @@ Secrets.h
 
 # Local agent memory / scratch files
 .remember/
+.dsh/
 
 # OS noise
 .DS_Store
