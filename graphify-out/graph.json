@@ -5073,7 +5073,7 @@
       "node_kind": "heading",
       "norm_label": "блок 5 — каскады и «рассвет»",
       "source_file": "README.md",
-      "source_location": "L1016"
+      "source_location": "L1018"
     },
     {
       "id": "readme_блок_6_дыхание_glitch_и_финализация",
@@ -5085,7 +5085,7 @@
       "node_kind": "heading",
       "norm_label": "блок 6 — «дыхание», glitch и финализация",
       "source_file": "README.md",
-      "source_location": "L998"
+      "source_location": "L1000"
     },
     {
       "id": "include_networkmanager",
@@ -6231,7 +6231,7 @@
       "node_kind": "heading",
       "norm_label": "11. правила разработки",
       "source_file": "README.md",
-      "source_location": "L864"
+      "source_location": "L865"
     },
     {
       "id": "readme_12_журнал_изменений",
@@ -6243,7 +6243,7 @@
       "node_kind": "heading",
       "norm_label": "12. журнал изменении",
       "source_file": "README.md",
-      "source_location": "L880"
+      "source_location": "L881"
     },
     {
       "id": "readme_13_перенос_проекта_в_другую_среду",
@@ -6255,7 +6255,7 @@
       "node_kind": "heading",
       "norm_label": "13. перенос проекта в другую среду",
       "source_file": "README.md",
-      "source_location": "L1081"
+      "source_location": "L1083"
     },
     {
       "id": "readme_1_что_это_за_проект_и_зачем_он_нужен",
@@ -6555,7 +6555,7 @@
       "node_kind": "heading",
       "norm_label": "home assistant — сущности полок и yandex smart home",
       "source_file": "README.md",
-      "source_location": "L980"
+      "source_location": "L982"
     },
     {
       "id": "readme_x18_flowers_умный_свет_для_цветочного_стеллажа",
@@ -6579,7 +6579,7 @@
       "node_kind": "heading",
       "norm_label": "блок 1 — фундамент",
       "source_file": "README.md",
-      "source_location": "L1071"
+      "source_location": "L1073"
     },
     {
       "id": "readme_блок_3_networkmanager",
@@ -6591,7 +6591,7 @@
       "node_kind": "heading",
       "norm_label": "блок 3 — networkmanager",
       "source_file": "README.md",
-      "source_location": "L1052"
+      "source_location": "L1054"
     },
     {
       "id": "readme_блок_4_роутинг_mqtt_и_anti_echo",
@@ -6603,7 +6603,7 @@
       "node_kind": "heading",
       "norm_label": "блок 4 — роутинг mqtt и anti-echo",
       "source_file": "README.md",
-      "source_location": "L1034"
+      "source_location": "L1036"
     },
     {
       "id": "readme_диагностика_самопроизвольного_выключения_и_retained_команды",
@@ -6615,7 +6615,7 @@
       "node_kind": "heading",
       "norm_label": "диагностика самопроизвольного выключения и retained-команды",
       "source_file": "README.md",
-      "source_location": "L915"
+      "source_location": "L916"
     },
     {
       "id": "readme_исправление_mqtt_эхо_петли_панелей",
@@ -6627,7 +6627,7 @@
       "node_kind": "heading",
       "norm_label": "исправление mqtt-эхо-петли панелеи",
       "source_file": "README.md",
-      "source_location": "L968"
+      "source_location": "L970"
     },
     {
       "id": "readme_передача_проекта_в_другую_среду",
@@ -6639,7 +6639,7 @@
       "node_kind": "heading",
       "norm_label": "передача проекта в другую среду",
       "source_file": "README.md",
-      "source_location": "L958"
+      "source_location": "L960"
     },
     {
       "id": "readme_почему_очистка_event_ом_а_не_delete_в_функции",
@@ -6663,7 +6663,7 @@
       "node_kind": "heading",
       "norm_label": "приемка на железе и заморозка v1.0.0",
       "source_file": "README.md",
-      "source_location": "L950"
+      "source_location": "L952"
     },
     {
       "id": "readme_режим_закат",
@@ -6675,7 +6675,7 @@
       "node_kind": "heading",
       "norm_label": "режим «закат»",
       "source_file": "README.md",
-      "source_location": "L882"
+      "source_location": "L883"
     },
     {
       "id": "readme_сохранение_индивидуальной_яркости_полок_в_nvs",
@@ -6687,7 +6687,7 @@
       "node_kind": "heading",
       "norm_label": "сохранение индивидуальнои яркости полок в nvs",
       "source_file": "README.md",
-      "source_location": "L898"
+      "source_location": "L899"
     },
     {
       "id": "readme_яркость_полок_в_телеметрии_и_mysql_через_node_red",
@@ -6699,7 +6699,7 @@
       "node_kind": "heading",
       "norm_label": "яркость полок в телеметрии и mysql через node-red",
       "source_file": "README.md",
-      "source_location": "L933"
+      "source_location": "L935"
     },
     {
       "id": "include_cie1931",
@@ -6745,7 +6745,7 @@
       "node_kind": "heading",
       "norm_label": "блок 2 — cie1931 и ledpanel",
       "source_file": "README.md",
-      "source_location": "L1063"
+      "source_location": "L1065"
     },
     {
       "id": "include_effectsmanager_effectsmanager_breathing",
@@ -11263,13 +11263,24 @@
     },
     {
       "source": "readme_12_журнал_изменений",
+      "target": "readme_блок_6_дыхание_glitch_и_финализация",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L1000",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_12_журнал_изменений",
       "target": "readme_блок_5_каскады_и_рассвет",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1016",
+      "source_location": "L1018",
       "weight": 1.0
     },
     {
@@ -11280,7 +11291,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1034",
+      "source_location": "L1036",
       "weight": 1.0
     },
     {
@@ -11291,7 +11302,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1052",
+      "source_location": "L1054",
       "weight": 1.0
     },
     {
@@ -11302,7 +11313,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1063",
+      "source_location": "L1065",
       "weight": 1.0
     },
     {
@@ -11313,7 +11324,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1071",
+      "source_location": "L1073",
       "weight": 1.0
     },
     {
@@ -11324,7 +11335,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L882",
+      "source_location": "L883",
       "weight": 1.0
     },
     {
@@ -11335,7 +11346,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L898",
+      "source_location": "L899",
       "weight": 1.0
     },
     {
@@ -11346,7 +11357,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L915",
+      "source_location": "L916",
       "weight": 1.0
     },
     {
@@ -11357,7 +11368,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L933",
+      "source_location": "L935",
       "weight": 1.0
     },
     {
@@ -11368,7 +11379,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L950",
+      "source_location": "L952",
       "weight": 1.0
     },
     {
@@ -11379,7 +11390,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L958",
+      "source_location": "L960",
       "weight": 1.0
     },
     {
@@ -11390,7 +11401,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L968",
+      "source_location": "L970",
       "weight": 1.0
     },
     {
@@ -11401,18 +11412,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L980",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_12_журнал_изменений",
-      "target": "readme_блок_6_дыхание_glitch_и_финализация",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": "L998",
+      "source_location": "L982",
       "weight": 1.0
     },
     {
@@ -11720,7 +11720,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1081",
+      "source_location": "L1083",
       "weight": 1.0
     },
     {
@@ -11841,7 +11841,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L864",
+      "source_location": "L865",
       "weight": 1.0
     },
     {
@@ -11852,7 +11852,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L880",
+      "source_location": "L881",
       "weight": 1.0
     },
     {
@@ -15593,7 +15593,7 @@
       "confidence_score": 0.95,
       "context": "dutyToPercent",
       "source_file": "README.md",
-      "source_location": "L1065",
+      "source_location": "L1067",
       "weight": 1.0
     },
     {
@@ -15701,7 +15701,7 @@
       "confidence_score": 0.95,
       "context": "percentToDuty",
       "source_file": "README.md",
-      "source_location": "L1065",
+      "source_location": "L1067",
       "weight": 1.0
     },
     {
@@ -15737,7 +15737,7 @@
       "confidence_score": 0.95,
       "context": "publishStartWaveState()",
       "source_file": "README.md",
-      "source_location": "L1010",
+      "source_location": "L1012",
       "weight": 1.0
     },
     {
@@ -15749,7 +15749,7 @@
       "confidence_score": 0.95,
       "context": "publishSunriseState()",
       "source_file": "README.md",
-      "source_location": "L1030",
+      "source_location": "L1032",
       "weight": 1.0
     },
     {
@@ -15761,10 +15761,10 @@
       "confidence_score": 0.95,
       "context": "setEffectsManager()",
       "source_file": "README.md",
-      "source_location": "L1030",
+      "source_location": "L1032",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f374b0e66ccdd6215cd8ed6c419bc8ca09019f25"
+  "built_at_commit": "12cabf040d8f4fb07b83f6865a69b32428a9fa04"
 }

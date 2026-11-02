@@ -16,9 +16,9 @@
 namespace {
 constexpr unsigned long kMqttRetryIntervalMs = 5000;
 constexpr unsigned long kWifiReconnectIntervalMs = 10000;
-// Brightness is a rare user action; debounce NVS writes so dragging a slider
-// does not wear flash. A power cut inside this window loses the last change.
-constexpr unsigned long kBrightnessSaveDelayMs = 30000;
+// Brightness is a rare user action; a short debounce coalesces slider updates
+// without leaving a long window where a power cut loses the last change.
+constexpr unsigned long kBrightnessSaveDelayMs = 2000;
 constexpr uint16_t kMqttBufferSize = 512;
 constexpr uint16_t kMqttSocketTimeoutSec = 2;
 
