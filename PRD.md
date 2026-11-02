@@ -51,7 +51,7 @@
 │   ├── Cie1931.h         // Таблица (LUT) или математика перевода 0..100% (или 0..1000) в 12-бит CIE1931
 │   ├── LedPanel.h        // Класс управления одной полкой ( индивидуальная яркость, фейдинг, дыхание, raw PWM)
 │   ├── EffectsManager.h  // Менеджеры: WaveAnimation, SunriseManager, BreathingManager, GlitchManager
-│   └── NetworkManager.h  // Wi-Fi, динамический шлюз MQTT, Watchdog (180s), роутинг топиков, телеметрия
+│   └── NetworkManager.h  // Wi-Fi, динамический шлюз MQTT, Watchdog (300s), роутинг топиков, телеметрия
 └── src/
     ├── main.cpp          // Только точка входа setup() и диспетчеризация loop()
     ├── Config.cpp        // Чтение/запись Preferences (NVS)
@@ -93,7 +93,7 @@
 | `.../bottomLight_state` | STATE | `"ON"` / `"OFF"` | `"ON"`, если горит полка 1 или 2; иначе `"OFF"`. | **Да** |
 | `.../sunrise` | CMD | `"ON"` / `"OFF"` | Запуск / остановка режима «Рассвет». | Нет |
 | `.../sunrise_state` | STATE | `"ON"` / `"OFF"` | Статус активности режима «Рассвет». | **Да** |
-| `.../startWave` | CMD | `"GO"` (любой) | Принудительный запуск волны «Дыхания» со сбросом таймера. | Нет |
+| `.../startWave` | CMD | `"GO"` (непустой) | Принудительный запуск волны «Дыхания» со сбросом таймера. | Нет |
 | `.../startWave_state` | STATE | `"ON"` / `"OFF"` | `"ON"` на время прохождения волны, `"OFF"` по завершении. | **Да** |
 | `.../config/fadeTime` | CMD | Float `0.1`..`10.0` | Время плавного перехода (с). Сохраняется в NVS (`Preferences`). | Нет |
 | `.../config/interval` | CMD | Float `0.0`..`5.0` | Пауза между полками в каскаде (с). Сохраняется в NVS. | Нет |
@@ -106,22 +106,28 @@
   "system": {
     "free_ram": 224224,
     "uptime": 396350,
+    "reset_reason": "SW",
+    "rssi": -58,
     "sunrise_mode": "OFF"
   },
   "config": {
     "fade_s": 2.0,
     "int_s": 0.5
   },
-  "brightness": 80,
+  "brightness": 100,
   "panels": {
-    "p1": "ON",
-    "p2": "ON",
-    "p3": "OFF",
-    "p4": "OFF",
-    "p5": "OFF"
+    "p1": { "state": "ON",  "brightness": 100 },
+    "p2": { "state": "ON",  "brightness": 100 },
+    "p3": { "state": "OFF", "brightness": 70 },
+    "p4": { "state": "OFF", "brightness": 40 },
+    "p5": { "state": "OFF", "brightness": 25 }
   }
 }
 ```
+
+Команды не должны публиковаться с `retain=true`: прошивка при каждом
+подключении очищает командные топики до подписки, иначе брокер воспроизводит
+старые `panel_N`/`fullLight` как новые команды.
 
 ## 5. Спецификация эффектов и защитных механизмов
 
@@ -150,7 +156,7 @@
 
 ### 5.4. Сторожевой таймер связи (Watchdog) и Безопасный старт
 * В `setup()` перед инициализацией периферии — `delay(5000)` для гарантированного доступа к USB-CDC при отладке.
-* В `loop()` — если `WiFi.status() != WL_CONNECTED || !client.connected()` непрерывно более **180 000 мс (3 минуты)**, выполняется `ESP.restart()`.
+* В `loop()` — если `WiFi.status() != WL_CONNECTED || !client.connected()` непрерывно более **300 000 мс (5 минут)**, выполняется `ESP.restart()`.
 
 ---
 
@@ -180,7 +186,7 @@ graph TD
         MQTT["PubSubClient (id: flowers-esp32)"]
         ANTI_ECHO["Anti-Echo Dispatcher"]
         STATE_PUB["State & Telemetry Publisher"]
-        WD["Connection Watchdog (180s)"]
+        WD["Connection Watchdog (300s)"]
     end
 
     SEC --> WIFI
@@ -232,7 +238,7 @@ graph TD
 1. Создать `NetworkManager.h` / `NetworkManager.cpp`.
 2. Реализовать подключение к Wi-Fi (`setSleep(false)`, `WIFI_POWER_19_5dBm`) и автоматическое получение адреса брокера через `WiFi.gatewayIP()`.
 3. Установить фиксированный Client ID `"flowers-esp32"`.
-4. Перенести функцию `checkConnectionWatchdog()` (рестарт через 180 с при отсутствии Wi-Fi или MQTT).
+4. Перенести функцию `checkConnectionWatchdog()` (рестарт через 300 с при отсутствии Wi-Fi или MQTT).
 5. Перенести генерацию `status` JSON строго в формате из п. 4.3 ТЗ и отслеживание групповых статусов (`fullLight_state`, `topLight_state`, `bottomLight_state`).
 * **Критерий приемки:** Успешная сборка, корректная инициализация `PubSubClient` адресом шлюза.
 * **Точка фиксации:** `refactor(network): modularize WiFi/MQTT with dynamic gateway IP and watchdog` $\to$ Обновить `graphify` $\to$ **Push & Pause**.

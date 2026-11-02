@@ -65,7 +65,9 @@ constexpr char kTopicPanelBrightnessStateSuffix[] = "/brightness_state";
 // --- Timings ---------------------------------------------------------------
 constexpr unsigned long kBootUsbDelayMs = 5000;
 constexpr unsigned long kTelemetryIntervalMs = 10000;
-constexpr unsigned long kConnectionWatchdogMs = 180000;
+// Last-resort recovery when Wi-Fi or MQTT stays unavailable for 5 minutes.
+// A broker/Wi-Fi outage gets five minutes to recover before a reboot.
+constexpr unsigned long kConnectionWatchdogMs = 300000;
 constexpr unsigned long kWifiConnectRetryMs = 500;
 constexpr uint8_t kWifiConnectRetries = 20;
 

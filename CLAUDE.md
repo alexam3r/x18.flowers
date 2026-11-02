@@ -19,7 +19,8 @@
 - HA-пакет `docs/flowers.yaml` валиден, интеграция Yandex Smart Home успешна.
 - MQTT-эхо-петля `panel_N` исправлена одним проходом.
 - Текущий `main` расширяет телеметрию: `status.panels.pN = {state, brightness}`,
-  добавлены `docs/flowers.sql` и `docs/convert_json.js`.
+  `reset_reason`/`rssi`, добавлены `docs/flowers.sql` и `docs/convert_json.js`.
+- Командные retained-топики очищаются до подписки; watchdog увеличен до 300 с.
 - Новый JSON проверен сборкой; проверка на железе — после перепрошивки.
 
 ## Быстрые команды

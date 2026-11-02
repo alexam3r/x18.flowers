@@ -10,6 +10,7 @@
 
 #include "EffectsManager.h"
 #include "LedPanel.h"
+#include "ResetReason.h"
 #include "Secrets.h"
 
 namespace {
@@ -85,7 +86,13 @@ void FlowersNetworkManager::update() {
     tryConnectMqtt();
   }
 
-  if (_mqtt.connected()) {
+  const bool mqttNowConnected = _mqtt.connected();
+  if (_mqttWasConnected && !mqttNowConnected) {
+    Serial.printf("NET: MQTT disconnected (state=%d)\n", _mqtt.state());
+  }
+  _mqttWasConnected = mqttNowConnected;
+
+  if (mqttNowConnected) {
     _mqtt.loop();
     publishGroupStates();
 
@@ -174,6 +181,15 @@ void FlowersNetworkManager::tryConnectMqtt() {
   }
 
   Serial.println("NET: MQTT connected");
+
+  // Must happen before subscribing: the old firmware retained panel states on
+  // panel_N, and command topics such as fullLight/sunrise may also have stale
+  // retained values. PubSubClient does not expose the retain flag, so such a
+  // message is indistinguishable from a fresh command. Commands are never
+  // supposed to be retained; clear them first so the broker cannot replay
+  // them on this or any later reconnect.
+  clearRetainedCommands();
+
   const String subscription = String(cfg::kTopicBase) + "#";
   if (!_mqtt.subscribe(subscription.c_str())) {
     Serial.println("NET: MQTT subscription failed");
@@ -184,6 +200,43 @@ void FlowersNetworkManager::tryConnectMqtt() {
   _lastTelemetryMs = millis();
 }
 
+void FlowersNetworkManager::clearRetainedCommands() {
+  static const char* const kSimpleCommands[] = {
+      cfg::kTopicBrightness,     cfg::kTopicFullLight,
+      cfg::kTopicTopLight,       cfg::kTopicBottomLight,
+      cfg::kTopicSunrise,        cfg::kTopicStartWave,
+      cfg::kTopicConfigFadeTime, cfg::kTopicConfigInterval,
+      cfg::kTopicConfigReboot,
+  };
+
+  uint8_t failed = 0;
+  for (const char* topic : kSimpleCommands) {
+    if (!_mqtt.publish(topic, "", true)) {
+      ++failed;
+    }
+  }
+
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    const String base =
+        String(cfg::kTopicPanelPrefix) + String(static_cast<unsigned>(i + 1));
+    if (!_mqtt.publish(base.c_str(), "", true)) {
+      ++failed;
+    }
+
+    const String brightness = base + cfg::kTopicPanelBrightnessSuffix;
+    if (!_mqtt.publish(brightness.c_str(), "", true)) {
+      ++failed;
+    }
+  }
+
+  if (failed != 0) {
+    Serial.printf("NET: retained command cleanup: %u publish(es) failed\n",
+                  static_cast<unsigned>(failed));
+  } else {
+    Serial.println("NET: retained command topics cleared");
+  }
+}
+
 void FlowersNetworkManager::checkWatchdog() {
   if (WiFi.status() == WL_CONNECTED && _mqtt.connected()) {
     _lastConnectionMs = millis();
@@ -191,7 +244,9 @@ void FlowersNetworkManager::checkWatchdog() {
   }
 
   if (millis() - _lastConnectionMs > cfg::kConnectionWatchdogMs) {
-    Serial.println("NET: watchdog timeout (180 s without Wi-Fi/MQTT), restarting");
+    Serial.printf(
+        "NET: watchdog timeout (%lu s without Wi-Fi/MQTT), restarting\n",
+        cfg::kConnectionWatchdogMs / 1000UL);
     delay(1000);
     ESP.restart();
   }
@@ -246,6 +301,8 @@ void FlowersNetworkManager::publishStatus() {
   JsonObject system = doc["system"].to<JsonObject>();
   system["free_ram"] = ESP.getFreeHeap();
   system["uptime"] = millis() / 1000;
+  system["reset_reason"] = resetReasonName(esp_reset_reason());
+  system["rssi"] = WiFi.RSSI();
   // The running firmware's standard uses "ACTIVE" while sunrise is running.
   system["sunrise_mode"] = _sunriseActive ? "ACTIVE" : "OFF";
 
@@ -444,6 +501,13 @@ void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
     }
   } else if (suffix == "startWave") {
     if (_effects == nullptr) {
+      return;
+    }
+    // Empty retained commands must not trigger the effect: a zero-length
+    // message is how retained topics are cleared. Any non-empty payload is
+    // still accepted for backward compatibility (HA sends "GO").
+    if (message.length() == 0) {
+      Serial.println("MQTT: empty startWave ignored");
       return;
     }
     if (_effects->startBreathingWave()) {

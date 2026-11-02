@@ -9,6 +9,7 @@
 #include "EffectsManager.h"
 #include "LedPanel.h"
 #include "NetworkManager.h"
+#include "ResetReason.h"
 
 LedPanel panels[cfg::kPanelCount];
 FlowersNetworkManager network;
@@ -50,6 +51,9 @@ void setup() {
   Serial.begin(115200);
   // Guarantees that the USB-CDC console is attached before the first log line.
   delay(cfg::kBootUsbDelayMs);
+
+  Serial.printf("BOOT: reset reason=%s\n",
+                resetReasonName(esp_reset_reason()));
 
   config.begin();
   printBootInfo();

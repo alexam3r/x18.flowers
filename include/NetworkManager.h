@@ -62,6 +62,7 @@ class FlowersNetworkManager {
   void resolveBroker();
   void maybeReconnectWifi();
   void tryConnectMqtt();
+  void clearRetainedCommands();
   void checkWatchdog();
 
   void publishAllStates();
@@ -82,6 +83,7 @@ class FlowersNetworkManager {
 
   IPAddress _brokerIp;
   bool _wifiConnected = false;
+  bool _mqttWasConnected = false;
   bool _firstRunStatus = true;
 
   int _globalBrightnessPercent = cfg::kDefaultBrightnessPercent;
