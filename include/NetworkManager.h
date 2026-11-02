@@ -63,6 +63,9 @@ class FlowersNetworkManager {
   void maybeReconnectWifi();
   void tryConnectMqtt();
   void clearRetainedCommands();
+  void rememberPanelBrightness(uint8_t index, uint8_t percent);
+  void rememberGlobalBrightness(uint8_t percent);
+  void flushBrightnessSave(bool force = false);
   void checkWatchdog();
 
   void publishAllStates();
@@ -89,6 +92,13 @@ class FlowersNetworkManager {
   int _globalBrightnessPercent = cfg::kDefaultBrightnessPercent;
   bool _sunriseActive = false;
   bool _startWaveActive = false;
+
+  // Pending user-set brightness. It is snapshotted when the command arrives,
+  // so a later sunrise/effect at 100% cannot overwrite the saved values before
+  // the 30-second debounce expires.
+  PanelBrightnessSettings _pendingBrightness;
+  bool _brightnessDirty = false;
+  unsigned long _brightnessDirtyMs = 0;
 
   unsigned long _lastMqttAttemptMs = 0;
   unsigned long _lastWifiReconnectMs = 0;

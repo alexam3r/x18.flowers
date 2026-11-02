@@ -90,6 +90,8 @@ constexpr unsigned long kGlitchMaxDurationMs = 500;
 constexpr char kNvsNamespace[] = "flowers";
 constexpr char kNvsKeyFadeTime[] = "fadeTime";
 constexpr char kNvsKeyWaveInterval[] = "interval";
+// One NVS blob with five per-panel brightness values and the global setpoint.
+constexpr char kNvsKeyPanelBrightness[] = "panelBrightness";
 
 constexpr float kDefaultFadeTimeSec = 2.0f;
 constexpr float kMinFadeTimeSec = 0.1f;
@@ -111,6 +113,22 @@ struct DeviceSettings {
   float waveIntervalSec = cfg::kDefaultWaveIntervalSec;
 };
 
+// Persisted brightness, not power state: after boot all panels stay OFF.
+// The values are applied to the panels while they are off, so the next ON
+// restores exactly what the user set (including different per-panel levels).
+struct PanelBrightnessSettings {
+  uint8_t version = 1;
+  uint8_t globalPercent = cfg::kDefaultBrightnessPercent;
+  uint8_t panelPercent[cfg::kPanelCount] = {
+      cfg::kDefaultBrightnessPercent, cfg::kDefaultBrightnessPercent,
+      cfg::kDefaultBrightnessPercent, cfg::kDefaultBrightnessPercent,
+      cfg::kDefaultBrightnessPercent};
+};
+
+// NVS stores the raw bytes; keep the layout stable and padding-free.
+static_assert(sizeof(PanelBrightnessSettings) == 7,
+              "PanelBrightnessSettings NVS layout changed");
+
 // Reads and writes the user-tunable settings from/to NVS (Preferences).
 // Values are validated against the ranges above before they are persisted.
 class Config {
@@ -124,6 +142,13 @@ class Config {
   float fadeTimeSec() const { return _settings.fadeTimeSec; }
   float waveIntervalSec() const { return _settings.waveIntervalSec; }
   bool ready() const { return _ready; }
+
+  const PanelBrightnessSettings& panelBrightness() const {
+    return _panelBrightness;
+  }
+  // Validates and persists the whole 5-panel brightness block atomically.
+  // Returns false when NVS is unavailable or a value is out of range.
+  bool savePanelBrightness(const PanelBrightnessSettings& settings);
 
   // Validates, applies and persists the value. Returns false when the
   // value is out of range or NVS is not available.
@@ -144,9 +169,11 @@ class Config {
 
  private:
   bool persistFloat(const char* key, float value);
+  bool loadPanelBrightness();
 
   Preferences _prefs;
   DeviceSettings _settings;
+  PanelBrightnessSettings _panelBrightness;
   bool _ready = false;
 };
 

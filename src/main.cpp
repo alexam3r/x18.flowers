@@ -45,6 +45,22 @@ void initPanels() {
   }
 }
 
+// Panels stay OFF after boot; only their brightness setpoints are restored.
+// The next ON (manual, voice or group) uses the saved per-panel value.
+void restorePanelBrightness() {
+  const PanelBrightnessSettings& saved = config.panelBrightness();
+  for (uint8_t i = 0; i < cfg::kPanelCount; ++i) {
+    panels[i].setBrightnessPercent(saved.panelPercent[i]);
+  }
+  network.setGlobalBrightnessPercent(saved.globalPercent);
+  Serial.printf("PANELS: restored brightness p1=%u p2=%u p3=%u p4=%u p5=%u\n",
+                static_cast<unsigned>(saved.panelPercent[0]),
+                static_cast<unsigned>(saved.panelPercent[1]),
+                static_cast<unsigned>(saved.panelPercent[2]),
+                static_cast<unsigned>(saved.panelPercent[3]),
+                static_cast<unsigned>(saved.panelPercent[4]));
+}
+
 }  // namespace
 
 void setup() {
@@ -59,6 +75,7 @@ void setup() {
   printBootInfo();
   printCieCheck();
   initPanels();
+  restorePanelBrightness();
 
   effects.begin(panels, cfg::kPanelCount, &network);
   network.setEffectsManager(&effects);

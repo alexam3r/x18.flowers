@@ -16,6 +16,9 @@
 namespace {
 constexpr unsigned long kMqttRetryIntervalMs = 5000;
 constexpr unsigned long kWifiReconnectIntervalMs = 10000;
+// Brightness is a rare user action; debounce NVS writes so dragging a slider
+// does not wear flash. A power cut inside this window loses the last change.
+constexpr unsigned long kBrightnessSaveDelayMs = 30000;
 constexpr uint16_t kMqttBufferSize = 512;
 constexpr uint16_t kMqttSocketTimeoutSec = 2;
 
@@ -49,6 +52,7 @@ bool FlowersNetworkManager::begin(LedPanel* panels, uint8_t panelCount) {
   _lastConnectionMs = millis();
   _lastTelemetryMs = millis();
   _lastWifiReconnectMs = millis();
+  _pendingBrightness = config.panelBrightness();
 
   const bool wifi = connectWifi();
   _lastConnectionMs = millis();
@@ -62,6 +66,10 @@ bool FlowersNetworkManager::begin(LedPanel* panels, uint8_t panelCount) {
 }
 
 void FlowersNetworkManager::update() {
+  // Also runs while Wi-Fi/MQTT is down: a user command must reach NVS after
+  // the debounce window even if the broker disappears immediately afterwards.
+  flushBrightnessSave();
+
   if (WiFi.status() != WL_CONNECTED) {
     if (_wifiConnected) {
       _wifiConnected = false;
@@ -237,6 +245,47 @@ void FlowersNetworkManager::clearRetainedCommands() {
   }
 }
 
+void FlowersNetworkManager::rememberPanelBrightness(uint8_t index,
+                                                     uint8_t percent) {
+  if (index >= cfg::kPanelCount) return;
+  _pendingBrightness.panelPercent[index] = percent;
+  _brightnessDirty = true;
+  _brightnessDirtyMs = millis();
+}
+
+void FlowersNetworkManager::rememberGlobalBrightness(uint8_t percent) {
+  _pendingBrightness.globalPercent = percent;
+  for (uint8_t& panelPercent : _pendingBrightness.panelPercent) {
+    panelPercent = percent;
+  }
+  _brightnessDirty = true;
+  _brightnessDirtyMs = millis();
+}
+
+void FlowersNetworkManager::flushBrightnessSave(bool force) {
+  if (!_brightnessDirty || _panels == nullptr) return;
+  if (!force && millis() - _brightnessDirtyMs < kBrightnessSaveDelayMs) {
+    return;
+  }
+
+  if (!config.savePanelBrightness(_pendingBrightness)) {
+    Serial.println("CONFIG: failed to save panel brightness, will retry");
+    _brightnessDirtyMs = millis();
+    return;
+  }
+
+  _brightnessDirty = false;
+  Serial.printf(
+      "CONFIG: saved panel brightness p1=%u p2=%u p3=%u p4=%u p5=%u, "
+      "global=%u%%\n",
+      static_cast<unsigned>(_pendingBrightness.panelPercent[0]),
+      static_cast<unsigned>(_pendingBrightness.panelPercent[1]),
+      static_cast<unsigned>(_pendingBrightness.panelPercent[2]),
+      static_cast<unsigned>(_pendingBrightness.panelPercent[3]),
+      static_cast<unsigned>(_pendingBrightness.panelPercent[4]),
+      static_cast<unsigned>(_pendingBrightness.globalPercent));
+}
+
 void FlowersNetworkManager::checkWatchdog() {
   if (WiFi.status() == WL_CONNECTED && _mqtt.connected()) {
     _lastConnectionMs = millis();
@@ -247,6 +296,7 @@ void FlowersNetworkManager::checkWatchdog() {
     Serial.printf(
         "NET: watchdog timeout (%lu s without Wi-Fi/MQTT), restarting\n",
         cfg::kConnectionWatchdogMs / 1000UL);
+    flushBrightnessSave(true);
     delay(1000);
     ESP.restart();
   }
@@ -568,6 +618,8 @@ void FlowersNetworkManager::handlePanelBrightness(LedPanel& panel,
   }
   panel.setBrightnessPercent(static_cast<float>(value), config.fadeTimeSec());
   publishPanelBrightness(panel);
+  rememberPanelBrightness(static_cast<uint8_t>(panel.id() - 1),
+                          static_cast<uint8_t>(value));
 }
 
 void FlowersNetworkManager::handleGlobalBrightness(const String& message) {
@@ -604,6 +656,7 @@ void FlowersNetworkManager::handleGlobalBrightness(const String& message) {
     publishPanelBrightness(_panels[i]);
   }
   publishGlobalBrightness();
+  rememberGlobalBrightness(static_cast<uint8_t>(value));
 }
 
 void FlowersNetworkManager::handleFadeTime(const String& message) {
@@ -647,6 +700,7 @@ void FlowersNetworkManager::handleReboot(const String& message) {
     return;
   }
   Serial.println("MQTT: reboot requested");
+  flushBrightnessSave(true);
   publishStatus();
   delay(500);
   ESP.restart();
