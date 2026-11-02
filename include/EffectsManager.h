@@ -26,15 +26,23 @@ class EffectsManager {
   bool startSunrise();
   void stopSunrise();
 
+  // Sunset: every lit panel fades from its current perceived brightness to 0
+  // over two hours. OFF stops the mode and turns the whole shelf off.
+  bool startSunset();
+  void stopSunset();
+
   // Manual trigger for the breathing wave (startWave topic). Resets the
   // automatic 8-10 minute timer on success.
   bool startBreathingWave();
 
   // Any manual panel/brightness command cancels sunrise, cascades and
-  // transient effects (breathing/glitch).
+  // transient effects (breathing/glitch). The full version also cancels the
+  // sunset; the per-panel version cancels it only for that panel.
   void onManualOverride();
+  void onManualOverrideForPanel(uint8_t panelIndex);
 
   bool sunriseActive() const { return _sunriseActive; }
+  bool sunsetActive() const { return _sunsetActive; }
   bool waveActive() const { return _wave.active; }
   bool breathingActive() const { return _breathing.active; }
   bool glitchActive() const { return _glitch.active; }
@@ -69,6 +77,12 @@ class EffectsManager {
   void stepWave();
   void updateWave();
   void updateSunrise();
+  void updateSunset();
+  void finishSunset();
+  void cancelSunset();
+  void cancelSunsetPanel(uint8_t panelIndex);
+  bool anySunsetPanelActive() const;
+  void turnAllPanelsOffImmediately();
 
   void stepBreathingWave();
   void updateBreathingWave();
@@ -89,6 +103,12 @@ class EffectsManager {
   bool _sunriseActive = false;
   unsigned long _sunriseStartMs = 0;
   bool _sunriseStarted[cfg::kPanelCount] = {};
+
+  bool _sunsetActive = false;
+  unsigned long _sunsetStartMs = 0;
+  unsigned long _sunsetLastStepMs = 0;
+  float _sunsetStartPercent[cfg::kPanelCount] = {};
+  bool _sunsetPanelActive[cfg::kPanelCount] = {};
 
   Wave _wave;
 

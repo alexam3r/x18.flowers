@@ -22,6 +22,15 @@ void EffectsManager::begin(LedPanel* panels, uint8_t panelCount,
   for (bool& started : _sunriseStarted) {
     started = false;
   }
+
+  _sunsetActive = false;
+  _sunsetStartMs = 0;
+  _sunsetLastStepMs = 0;
+  for (uint8_t i = 0; i < cfg::kPanelCount; ++i) {
+    _sunsetStartPercent[i] = 0.0f;
+    _sunsetPanelActive[i] = false;
+  }
+
   _wave.active = false;
 
   _breathing.active = false;
@@ -40,6 +49,7 @@ void EffectsManager::update() {
   }
 
   updateSunrise();
+  updateSunset();
   updateWave();
 
   if (!_breathing.active &&
@@ -58,10 +68,20 @@ void EffectsManager::onManualOverride() {
     stopSunrise();
   }
   _wave.active = false;
+  cancelSunset();
+}
+
+void EffectsManager::onManualOverrideForPanel(uint8_t panelIndex) {
+  cancelTransientEffects();
+  if (_sunriseActive) {
+    stopSunrise();
+  }
+  _wave.active = false;
+  cancelSunsetPanel(panelIndex);
 }
 
 bool EffectsManager::startSunrise() {
-  if (_panels == nullptr || _sunriseActive) {
+  if (_panels == nullptr || _sunriseActive || _sunsetActive) {
     return false;
   }
 
@@ -140,6 +160,15 @@ void EffectsManager::setFullLight(bool on) {
     return;
   }
 
+  if (_sunsetActive) {
+    cancelSunset();
+    if (!on) {
+      // An explicit full OFF is immediate and wins over the sunset.
+      turnAllPanelsOffImmediately();
+      return;
+    }
+  }
+
   cancelTransientEffects();
   if (!on) {
     stopSunrise();
@@ -160,6 +189,37 @@ void EffectsManager::setTopLight(bool on) {
   // A top command always interrupts the sunrise (old firmware behaviour).
   cancelTransientEffects();
   stopSunrise();
+
+  bool topSunset = false;
+  if (_sunsetActive) {
+    for (uint8_t i = 2; i < _panelCount; ++i) {
+      if (_sunsetPanelActive[i]) {
+        topSunset = true;
+        break;
+      }
+    }
+  }
+
+  if (topSunset) {
+    // Remove the top panels from the sunset. The bottom pair keeps fading.
+    for (uint8_t i = 2; i < _panelCount; ++i) {
+      cancelSunsetPanel(i);
+    }
+    if (!on) {
+      // Explicit top OFF is immediate, not a normal cascade.
+      for (uint8_t i = 2; i < _panelCount; ++i) {
+        _panels[i].setOn(false, cfg::kSunsetQuickOffSec);
+        if (_network != nullptr) {
+          _network->publishPanelState(_panels[i]);
+        }
+      }
+      if (_network != nullptr) {
+        _network->publishGroupStates();
+        _network->publishStatus();
+      }
+      return;
+    }
+  }
 
   uint8_t sequence[cfg::kPanelCount];
   uint8_t count = 0;
@@ -183,9 +243,39 @@ void EffectsManager::setBottomLight(bool on) {
   cancelTransientEffects();
   stopSunrise();
 
+  const uint8_t bottomCount = (_panelCount < 2) ? _panelCount : 2;
+  bool bottomSunset = false;
+  if (_sunsetActive) {
+    for (uint8_t i = 0; i < bottomCount; ++i) {
+      if (_sunsetPanelActive[i]) {
+        bottomSunset = true;
+        break;
+      }
+    }
+  }
+
+  if (bottomSunset) {
+    // Remove the bottom pair from the sunset. The top panels keep fading.
+    for (uint8_t i = 0; i < bottomCount; ++i) {
+      cancelSunsetPanel(i);
+    }
+    if (!on) {
+      for (uint8_t i = 0; i < bottomCount; ++i) {
+        _panels[i].setOn(false, cfg::kSunsetQuickOffSec);
+        if (_network != nullptr) {
+          _network->publishPanelState(_panels[i]);
+        }
+      }
+      if (_network != nullptr) {
+        _network->publishGroupStates();
+        _network->publishStatus();
+      }
+      return;
+    }
+  }
+
   uint8_t sequence[cfg::kPanelCount];
   uint8_t count = 0;
-  const uint8_t bottomCount = (_panelCount < 2) ? _panelCount : 2;
   if (on) {
     for (uint8_t i = 0; i < bottomCount; ++i) {
       sequence[count++] = i;
@@ -307,9 +397,182 @@ void EffectsManager::updateSunrise() {
   }
 }
 
+bool EffectsManager::startSunset() {
+  if (_panels == nullptr || _panelCount == 0 || _sunsetActive ||
+      _sunriseActive) {
+    return false;
+  }
+
+  uint8_t activeCount = 0;
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    if (_panels[i].isOn()) {
+      ++activeCount;
+    }
+  }
+  if (activeCount == 0) {
+    Serial.println("EFFECTS: sunset rejected, no panels are on");
+    return false;
+  }
+
+  _wave.active = false;
+  cancelTransientEffects();
+
+  _sunsetActive = true;
+  _sunsetStartMs = millis();
+  _sunsetLastStepMs = _sunsetStartMs;
+
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    const bool active = _panels[i].isOn();
+    _sunsetPanelActive[i] = active;
+    // The setpoint is the user-visible brightness shown in HA. Fading from it
+    // is stable even if a short effect was running at 22:00.
+    _sunsetStartPercent[i] =
+        active ? _panels[i].brightnessPercent() : 0.0f;
+    if (active) {
+      _panels[i].setSunsetPercent(_sunsetStartPercent[i]);
+    }
+  }
+
+  Serial.printf("EFFECTS: sunset started, %u panel(s), 2 hours\n",
+                static_cast<unsigned>(activeCount));
+  if (_network != nullptr) {
+    _network->setSunsetActive(true);
+    _network->publishSunsetState();
+    _network->publishStatus();
+  }
+  return true;
+}
+
+void EffectsManager::stopSunset() {
+  // Without an active sunset this is just a normal full-shelf OFF.
+  if (!_sunsetActive) {
+    setFullLight(false);
+    return;
+  }
+
+  cancelSunset();
+  turnAllPanelsOffImmediately();
+}
+
+void EffectsManager::updateSunset() {
+  if (!_sunsetActive) {
+    return;
+  }
+
+  if (!anySunsetPanelActive()) {
+    cancelSunset();
+    return;
+  }
+
+  const unsigned long now = millis();
+  const unsigned long elapsed = now - _sunsetStartMs;
+
+  if (elapsed >= cfg::kSunsetDurationMs) {
+    finishSunset();
+    return;
+  }
+
+  if (now - _sunsetLastStepMs < cfg::kSunsetStepMs) {
+    return;
+  }
+  _sunsetLastStepMs = now;
+
+  const float progress =
+      static_cast<float>(elapsed) / static_cast<float>(cfg::kSunsetDurationMs);
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    if (!_sunsetPanelActive[i]) {
+      continue;
+    }
+    _panels[i].setSunsetPercent(_sunsetStartPercent[i] * (1.0f - progress));
+  }
+}
+
+void EffectsManager::finishSunset() {
+  if (!_sunsetActive) {
+    return;
+  }
+
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    if (!_sunsetPanelActive[i]) {
+      continue;
+    }
+    _panels[i].finishSunset();
+    _sunsetPanelActive[i] = false;
+    if (_network != nullptr) {
+      _network->publishPanelState(_panels[i]);
+    }
+  }
+
+  _sunsetActive = false;
+  Serial.println("EFFECTS: sunset complete, panels off");
+  if (_network != nullptr) {
+    _network->setSunsetActive(false);
+    _network->publishSunsetState();
+    _network->publishGroupStates();
+    _network->publishStatus();
+  }
+}
+
+void EffectsManager::cancelSunset() {
+  if (!_sunsetActive) {
+    return;
+  }
+
+  _sunsetActive = false;
+  for (bool& active : _sunsetPanelActive) {
+    active = false;
+  }
+  Serial.println("EFFECTS: sunset cancelled");
+  if (_network != nullptr) {
+    _network->setSunsetActive(false);
+    _network->publishSunsetState();
+    _network->publishStatus();
+  }
+}
+
+void EffectsManager::cancelSunsetPanel(uint8_t panelIndex) {
+  if (!_sunsetActive || panelIndex >= _panelCount ||
+      !_sunsetPanelActive[panelIndex]) {
+    return;
+  }
+
+  _sunsetPanelActive[panelIndex] = false;
+  if (!anySunsetPanelActive()) {
+    _sunsetActive = false;
+    Serial.println("EFFECTS: sunset stopped, no active panels left");
+    if (_network != nullptr) {
+      _network->setSunsetActive(false);
+      _network->publishSunsetState();
+      _network->publishStatus();
+    }
+  }
+}
+
+bool EffectsManager::anySunsetPanelActive() const {
+  for (bool active : _sunsetPanelActive) {
+    if (active) return true;
+  }
+  return false;
+}
+
+void EffectsManager::turnAllPanelsOffImmediately() {
+  _wave.active = false;
+  cancelTransientEffects();
+  for (uint8_t i = 0; i < _panelCount; ++i) {
+    _panels[i].setOn(false, cfg::kSunsetQuickOffSec);
+    if (_network != nullptr) {
+      _network->publishPanelState(_panels[i]);
+    }
+  }
+  if (_network != nullptr) {
+    _network->publishGroupStates();
+    _network->publishStatus();
+  }
+}
+
 bool EffectsManager::startBreathingWave() {
   if (_panels == nullptr || _panelCount == 0 || _breathing.active ||
-      _sunriseActive || _wave.active || _glitch.active) {
+      _sunriseActive || _sunsetActive || _wave.active || _glitch.active) {
     return false;
   }
 
@@ -364,7 +627,7 @@ void EffectsManager::updateBreathingWave() {
     return;
   }
 
-  if (_sunriseActive || _wave.active) {
+  if (_sunriseActive || _sunsetActive || _wave.active) {
     cancelBreathingWave();
     return;
   }
@@ -444,7 +707,8 @@ void EffectsManager::updateGlitch() {
     }
     scheduleNextGlitch();
 
-    if (_sunriseActive || _wave.active || _breathing.active) {
+    if (_sunriseActive || _sunsetActive || _wave.active ||
+        _breathing.active) {
       return;
     }
 

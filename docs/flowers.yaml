@@ -127,6 +127,15 @@ mqtt:
       icon: "mdi:weather-sunset-up"
       device: *flower_device
 
+    - name: "Режим Закат"
+      unique_id: flowers_sunset
+      state_topic: "home/flat7/flowers/sunset_state"
+      command_topic: "home/flat7/flowers/sunset"
+      payload_on: "ON"
+      payload_off: "OFF"
+      icon: "mdi:weather-sunset-down"
+      device: *flower_device
+
     # Прошивка не умеет останавливать «Дыхание»: startWave — momentary-триггер.
     # И ON, и OFF отправляют GO; startWave_state гаснет автоматически после
     # возврата последней полки. Так сущность остаётся управляемой из Яндекса.

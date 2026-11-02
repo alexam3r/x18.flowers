@@ -40,6 +40,9 @@ class FlowersNetworkManager {
   bool sunriseActive() const { return _sunriseActive; }
   void setSunriseActive(bool active) { _sunriseActive = active; }
 
+  bool sunsetActive() const { return _sunsetActive; }
+  void setSunsetActive(bool active) { _sunsetActive = active; }
+
   bool startWaveActive() const { return _startWaveActive; }
   void setStartWaveActive(bool active) { _startWaveActive = active; }
 
@@ -50,6 +53,7 @@ class FlowersNetworkManager {
   void publishStatus();
   void publishGroupStates(bool force = false);
   void publishSunriseState();
+  void publishSunsetState();
   void publishStartWaveState();
 
   // Retained state topics. Public so effects can report panel changes later.
@@ -91,6 +95,7 @@ class FlowersNetworkManager {
 
   int _globalBrightnessPercent = cfg::kDefaultBrightnessPercent;
   bool _sunriseActive = false;
+  bool _sunsetActive = false;
   bool _startWaveActive = false;
 
   // Pending user-set brightness. It is snapshotted when the command arrives,

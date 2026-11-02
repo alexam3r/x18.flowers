@@ -99,6 +99,35 @@ void LedPanel::setRawPwm(uint16_t duty) {
   writeDuty(duty);
 }
 
+void LedPanel::setSunsetPercent(float percent) {
+  if (!_initialized) return;
+
+  _fading = false;
+  _breathing = false;
+  if (!_isOn) {
+    _isOn = true;
+    _stateChanged = true;
+  }
+
+  _currentPercent = cie1931::clampPercent(percent);
+  _currentDuty = cie1931::percentToDuty(_currentPercent);
+  writeDuty(_currentDuty);
+}
+
+void LedPanel::finishSunset() {
+  if (!_initialized) return;
+
+  _fading = false;
+  _breathing = false;
+  if (_isOn) {
+    _isOn = false;
+    _stateChanged = true;
+  }
+  _currentPercent = 0.0f;
+  _currentDuty = 0;
+  writeDuty(0);
+}
+
 void LedPanel::update() {
   if (!_initialized || !_fading) return;
 

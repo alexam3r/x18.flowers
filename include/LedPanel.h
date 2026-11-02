@@ -39,6 +39,12 @@ class LedPanel {
   // glitch effect and its exact restore.
   void setRawPwm(uint16_t duty);
 
+  // Sunset drives the visible output directly while keeping the panel's own
+  // brightness setpoint untouched, so NVS and the next ON are unaffected.
+  void setSunsetPercent(float percent);
+  // Ends the sunset with the panel off; the saved brightness setpoint stays.
+  void finishSunset();
+
   bool isOn() const { return _isOn; }
   bool isFading() const { return _fading; }
   bool isBreathing() const { return _breathing; }

@@ -40,6 +40,7 @@ constexpr char kTopicFullLight[] = "home/flat7/flowers/fullLight";
 constexpr char kTopicTopLight[] = "home/flat7/flowers/topLight";
 constexpr char kTopicBottomLight[] = "home/flat7/flowers/bottomLight";
 constexpr char kTopicSunrise[] = "home/flat7/flowers/sunrise";
+constexpr char kTopicSunset[] = "home/flat7/flowers/sunset";
 constexpr char kTopicStartWave[] = "home/flat7/flowers/startWave";
 constexpr char kTopicConfigFadeTime[] = "home/flat7/flowers/config/fadeTime";
 constexpr char kTopicConfigInterval[] = "home/flat7/flowers/config/interval";
@@ -51,6 +52,7 @@ constexpr char kTopicFullLightState[] = "home/flat7/flowers/fullLight_state";
 constexpr char kTopicTopLightState[] = "home/flat7/flowers/topLight_state";
 constexpr char kTopicBottomLightState[] = "home/flat7/flowers/bottomLight_state";
 constexpr char kTopicSunriseState[] = "home/flat7/flowers/sunrise_state";
+constexpr char kTopicSunsetState[] = "home/flat7/flowers/sunset_state";
 constexpr char kTopicStartWaveState[] = "home/flat7/flowers/startWave_state";
 constexpr char kTopicBrightnessState[] = "home/flat7/flowers/brightness_state";
 
@@ -75,6 +77,12 @@ constexpr uint8_t kWifiConnectRetries = 20;
 constexpr unsigned long kSunrisePanelIntervalMs = 120000;
 constexpr float kSunriseFadeSec = 360.0f;
 constexpr unsigned long kSunriseDurationMs = 14UL * 60UL * 1000UL;
+
+// Sunset: every lit panel fades linearly from its current perceived level to
+// 0% over exactly two hours. The panel brightness setpoint is not changed.
+constexpr unsigned long kSunsetDurationMs = 2UL * 60UL * 60UL * 1000UL;
+constexpr unsigned long kSunsetStepMs = 1000;
+constexpr float kSunsetQuickOffSec = 0.1f;
 
 // Breathing wave scheduling window (8..10 minutes).
 constexpr int kBreathingMinSec = 480;

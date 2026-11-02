@@ -212,9 +212,9 @@ void FlowersNetworkManager::clearRetainedCommands() {
   static const char* const kSimpleCommands[] = {
       cfg::kTopicBrightness,     cfg::kTopicFullLight,
       cfg::kTopicTopLight,       cfg::kTopicBottomLight,
-      cfg::kTopicSunrise,        cfg::kTopicStartWave,
-      cfg::kTopicConfigFadeTime, cfg::kTopicConfigInterval,
-      cfg::kTopicConfigReboot,
+      cfg::kTopicSunrise,        cfg::kTopicSunset,
+      cfg::kTopicStartWave,      cfg::kTopicConfigFadeTime,
+      cfg::kTopicConfigInterval, cfg::kTopicConfigReboot,
   };
 
   uint8_t failed = 0;
@@ -355,6 +355,7 @@ void FlowersNetworkManager::publishStatus() {
   system["rssi"] = WiFi.RSSI();
   // The running firmware's standard uses "ACTIVE" while sunrise is running.
   system["sunrise_mode"] = _sunriseActive ? "ACTIVE" : "OFF";
+  system["sunset_mode"] = _sunsetActive ? "ACTIVE" : "OFF";
 
   JsonObject configBlock = doc["config"].to<JsonObject>();
   configBlock["fade_s"] = config.fadeTimeSec();
@@ -390,6 +391,7 @@ void FlowersNetworkManager::publishAllStates() {
   }
   publishGlobalBrightness();
   publishSunriseState();
+  publishSunsetState();
   publishStartWaveState();
   publishGroupStates(true);
   publishStatus();
@@ -441,6 +443,13 @@ void FlowersNetworkManager::publishSunriseState() {
     return;
   }
   _mqtt.publish(cfg::kTopicSunriseState, _sunriseActive ? "ON" : "OFF", true);
+}
+
+void FlowersNetworkManager::publishSunsetState() {
+  if (!_mqtt.connected()) {
+    return;
+  }
+  _mqtt.publish(cfg::kTopicSunsetState, _sunsetActive ? "ON" : "OFF", true);
 }
 
 void FlowersNetworkManager::publishStartWaveState() {
@@ -549,6 +558,19 @@ void FlowersNetworkManager::handleMessage(char* topic, uint8_t* payload,
     } else {
       Serial.printf("MQTT: invalid sunrise payload '%s'\n", message.c_str());
     }
+  } else if (suffix == "sunset") {
+    if (_effects == nullptr) {
+      return;
+    }
+    if (message == "ON") {
+      if (!_effects->startSunset()) {
+        Serial.println("EFFECTS: sunset not started");
+      }
+    } else if (message == "OFF") {
+      _effects->stopSunset();
+    } else {
+      Serial.printf("MQTT: invalid sunset payload '%s'\n", message.c_str());
+    }
   } else if (suffix == "startWave") {
     if (_effects == nullptr) {
       return;
@@ -589,7 +611,7 @@ void FlowersNetworkManager::handlePanelPower(LedPanel& panel,
   Serial.printf("MQTT: panel_%u -> %s\n", static_cast<unsigned>(panel.id()),
                 requested ? "ON" : "OFF");
   if (_effects != nullptr) {
-    _effects->onManualOverride();
+    _effects->onManualOverrideForPanel(static_cast<uint8_t>(panel.id() - 1));
   }
   panel.setOn(requested, config.fadeTimeSec());
   publishPanelState(panel);
@@ -614,7 +636,7 @@ void FlowersNetworkManager::handlePanelBrightness(LedPanel& panel,
   Serial.printf("MQTT: panel_%u brightness -> %d%%\n",
                 static_cast<unsigned>(panel.id()), value);
   if (_effects != nullptr) {
-    _effects->onManualOverride();
+    _effects->onManualOverrideForPanel(static_cast<uint8_t>(panel.id() - 1));
   }
   panel.setBrightnessPercent(static_cast<float>(value), config.fadeTimeSec());
   publishPanelBrightness(panel);
