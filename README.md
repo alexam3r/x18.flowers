@@ -759,49 +759,47 @@ MQTT in (home/flat7/flowers/status)
    SELECT * FROM flowers_status_local ORDER BY id DESC LIMIT 1;
    ```
 
-#### Часовой пояс и локальное время
+#### Часовой пояс
 
-`created_at` хранится в **UTC** (`DATETIME(3)`), функция формирует его из
-`toISOString()`. Если смотреть сырую таблицу из Москвы, время будет казаться
-на 3 часа меньше — это нормально, а не ошибка записи.
+`created_at` хранится в **московском времени +03:00** (`DATETIME(3)`), поэтому
+в сырой таблице сразу видно привычное локальное время. Москва не переходит на
+летнее время, фиксированное смещение безопасно.
 
-Почему нельзя прибавлять `+3` в JavaScript:
+Важно, что `+3` теперь используется в двух местах:
 
-- EVENT очистки сравнивает `created_at` с `UTC_TIMESTAMP(3)`. Если писать в
-  `created_at` московское время, EVENT удалит строки примерно на 3 часа
-  раньше — retention станет ~69 часов вместо 72;
-- в таблице окажутся данные с разным смыслом, и непонятно, как их сравнивать;
-- при смене часового пояса/переходе на летнее время всё сломается.
+- в [`docs/convert_json.js`](docs/convert_json.js) при формировании
+  `created_at`;
+- в EVENT очистки: `DATE_ADD(UTC_TIMESTAMP(3), INTERVAL 3 HOUR)`.
 
-Правильно хранить UTC, а локальное время показывать представлением
-`flowers_status_local` из [`docs/flowers.sql`](docs/flowers.sql):
+Если когда-нибудь изменится часовой пояс, нужно поменять оба места. Для Москвы
+это не требуется.
+
+Представление `flowers_status_local` оставляет локальное время и дополнительно
+отдаёт UTC:
 
 ```sql
-SELECT created_at_local, free_ram, uptime_s, p1_on, p1_brightness
+SELECT created_at_local, created_at_utc, free_ram, uptime_s,
+       p1_on, p1_brightness
 FROM flowers_status_local
 ORDER BY id DESC
 LIMIT 10;
 ```
 
-В представлении есть и `created_at_utc`, и `created_at_local`
-(`CONVERT_TZ(created_at, '+00:00', '+03:00')`). Смещения работают без
-загруженных timezone-таблиц MySQL; Москва живёт в фиксированном `+03:00`.
+`created_at_utc` считается как
+`CONVERT_TZ(created_at, '+03:00', '+00:00')`; числовые смещения работают без
+загруженных timezone-таблиц MySQL.
 
-Если ты уже писал `+3` в `created_at`:
+Если таблица ещё хранит UTC (предыдущая версия схемы), один раз переведи её в
+локальное время — при остановленном Node-RED и после backup:
 
-1. Верни в функции строку
-   `new Date().toISOString().slice(0, 23).replace('T', ' ')`.
-2. Останови Node-RED, сделай backup таблицы.
-3. Один раз переведи старые строки:
-   ```sql
-   UPDATE flowers_status
-   SET created_at = created_at - INTERVAL 3 HOUR;
-   ```
-   Если история не нужна — `TRUNCATE TABLE flowers_status;`.
-4. Только после этого используй `flowers_status_local`.
+```sql
+UPDATE flowers_status
+SET created_at = created_at + INTERVAL 3 HOUR;
+```
 
-Не применяй `UPDATE` к смешанным данным: сначала убедись, что все строки
-писались в одном часовом поясе.
+Если таблица уже писала `+3` (твой текущий вариант) — миграция не нужна.
+Если история не нужна — `TRUNCATE TABLE flowers_status;`. Не применяй `UPDATE`
+к смешанным данным.
 
 Поля таблицы повторяют JSON: `free_ram`, `uptime_s`, `sunrise_mode`, `fade_s`,
 `int_s`, `brightness`, а для каждой полки — `pN_on` (`1`/`0`) и
@@ -833,7 +831,10 @@ LIMIT 10;
 
 ```sql
 DELETE FROM flowers_status
-WHERE created_at < UTC_TIMESTAMP(3) - INTERVAL 72 HOUR;
+WHERE created_at < DATE_SUB(
+  DATE_ADD(UTC_TIMESTAMP(3), INTERVAL 3 HOUR),
+  INTERVAL 72 HOUR
+);
 ```
 
 ---
@@ -980,7 +981,8 @@ MySQL/Node-RED, очистка retained-команд) проверена сбо�
 - Добавлен [`docs/flowers.sql`](docs/flowers.sql): таблица `flowers_status`
   под новый JSON и EVENT `ev_flowers_status_cleanup` с retention 72 часа.
 - [`docs/convert_json.js`](docs/convert_json.js) переписан под новый JSON:
-  валидация/ограничение значений, UTC в `created_at`, 17 параметров INSERT,
+  валидация/ограничение значений, московское время в `created_at`,
+  17 параметров INSERT,
   совместимость со старым форматом `"ON"`/`"OFF"`.
 - Удаление старых записей перенесено из функции Node-RED в MySQL EVENT:
   один DELETE в час вместо DELETE на каждую телеметрию.

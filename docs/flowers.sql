@@ -1,9 +1,10 @@
 -- x18.flowers: схема телеметрии для MySQL 8.0+ / MariaDB 10.6+.
 --
 -- Выполнить в базе, к которой подключается Node-RED (например, `USE flowers;`).
--- Время хранится в UTC: Node-RED передаёт created_at в UTC, поэтому EVENT
--- очистки и запросы не зависят от часового пояса сессии MySQL.
--- Для локального времени Москвы ниже создаётся VIEW flowers_status_local.
+-- Время хранится в московском времени (+03:00): так его видно в сырой
+-- таблице. Москва не переходит на летнее время, поэтому фиксированное
+-- смещение безопасно. EVENT очистки использует то же смещение.
+-- VIEW flowers_status_local дополнительно отдаёт created_at_utc.
 --
 -- ВАЖНО: если таблица flowers_status уже создана старой версией
 -- (колонки uptime и p1..p5-строки), CREATE TABLE IF NOT EXISTS её не изменит.
@@ -19,7 +20,7 @@
 
 CREATE TABLE IF NOT EXISTS flowers_status (
   id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  created_at      DATETIME(3)     NOT NULL COMMENT 'UTC, время замера из Node-RED',
+  created_at      DATETIME(3)     NOT NULL COMMENT 'Europe/Moscow (+03:00), время замера',
   free_ram        INT UNSIGNED    NOT NULL COMMENT 'ESP.getFreeHeap(), байт',
   uptime_s        INT UNSIGNED    NOT NULL COMMENT 'uptime, секунды',
   sunrise_mode    VARCHAR(16)     NOT NULL DEFAULT 'OFF' COMMENT 'OFF / ACTIVE',
@@ -43,14 +44,14 @@ CREATE TABLE IF NOT EXISTS flowers_status (
   COLLATE=utf8mb4_unicode_ci
   COMMENT='Телеметрия x18.flowers, хранение 72 часа';
 
--- created_at в таблице — UTC. Для Москвы (+03:00, без перехода на летнее
--- время) удобно смотреть локальное представление. CONVERT_TZ с числовыми
+-- created_at в таблице — московское время. Представление оставляет его как
+-- created_at_local и добавляет created_at_utc. CONVERT_TZ с числовыми
 -- смещениями работает без загруженных timezone-таблиц MySQL.
 CREATE OR REPLACE VIEW flowers_status_local AS
 SELECT
   id,
-  created_at AS created_at_utc,
-  CONVERT_TZ(created_at, '+00:00', '+03:00') AS created_at_local,
+  created_at AS created_at_local,
+  CONVERT_TZ(created_at, '+03:00', '+00:00') AS created_at_utc,
   free_ram,
   uptime_s,
   sunrise_mode,
@@ -69,12 +70,13 @@ SELECT
   p5_brightness
 FROM flowers_status;
 
--- Если раньше в created_at уже писали московское время костылём
--- `Date.now() + 3h`, перед переходом на UTC переведите старые строки
--- (остановите Node-RED, сделайте backup):
---   UPDATE flowers_status
---   SET created_at = created_at - INTERVAL 3 HOUR;
--- Если история не нужна, проще: TRUNCATE TABLE flowers_status;
+-- Миграция существующих данных:
+-- * если таблица уже хранит московское время (+03:00) — ничего не делать;
+-- * если таблица хранит UTC (предыдущая версия схемы) — один раз, при
+--   остановленном Node-RED и после backup, сдвинуть строки вперёд:
+--     UPDATE flowers_status
+--     SET created_at = created_at + INTERVAL 3 HOUR;
+-- * если история не нужна — TRUNCATE TABLE flowers_status;
 -- Не применяйте UPDATE к смешанным данным: сначала убедитесь, что все
 -- строки писались в одном часовом поясе.
 
@@ -91,9 +93,12 @@ CREATE EVENT IF NOT EXISTS ev_flowers_status_cleanup
   COMMENT 'Удаляет телеметрию x18.flowers старше 72 часов'
   DO
     DELETE FROM flowers_status
-    WHERE created_at < UTC_TIMESTAMP(3) - INTERVAL 72 HOUR;
+    WHERE created_at < DATE_SUB(
+      DATE_ADD(UTC_TIMESTAMP(3), INTERVAL 3 HOUR),
+      INTERVAL 72 HOUR
+    );
 
 -- Полезные проверки после импорта:
 --   SELECT COUNT(*) FROM flowers_status;
---   SELECT * FROM flowers_status ORDER BY created_at DESC LIMIT 10;
+--   SELECT * FROM flowers_status_local ORDER BY id DESC LIMIT 10;
 --   SHOW CREATE EVENT ev_flowers_status_cleanup;

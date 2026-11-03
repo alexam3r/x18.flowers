@@ -2041,7 +2041,7 @@
       "file_type": "code",
       "norm_label": "asobject()",
       "source_file": "docs/convert_json.js",
-      "source_location": "L44"
+      "source_location": "L43"
     },
     {
       "id": "docs_convert_json_tofloat",
@@ -2053,7 +2053,7 @@
       "file_type": "code",
       "norm_label": "tofloat()",
       "source_file": "docs/convert_json.js",
-      "source_location": "L55"
+      "source_location": "L54"
     },
     {
       "id": "docs_convert_json_toint",
@@ -2065,7 +2065,7 @@
       "file_type": "code",
       "norm_label": "toint()",
       "source_file": "docs/convert_json.js",
-      "source_location": "L48"
+      "source_location": "L47"
     },
     {
       "id": "docs_convert_json_topanel",
@@ -2077,7 +2077,7 @@
       "file_type": "code",
       "norm_label": "topanel()",
       "source_file": "docs/convert_json.js",
-      "source_location": "L63"
+      "source_location": "L62"
     },
     {
       "id": "include_effectsmanager_effectsmanager_resetbreathingschedule",
@@ -5028,7 +5028,7 @@
       "file_type": "code",
       "norm_label": "config",
       "source_file": "docs/convert_json.js",
-      "source_location": "L77"
+      "source_location": "L76"
     },
     {
       "id": "docs_convert_json_createdat",
@@ -5050,7 +5050,7 @@
       "file_type": "code",
       "norm_label": "panelparams",
       "source_file": "docs/convert_json.js",
-      "source_location": "L83"
+      "source_location": "L86"
     },
     {
       "id": "docs_convert_json_panels",
@@ -5061,7 +5061,7 @@
       "file_type": "code",
       "norm_label": "panels",
       "source_file": "docs/convert_json.js",
-      "source_location": "L78"
+      "source_location": "L77"
     },
     {
       "id": "docs_convert_json_system",
@@ -5072,7 +5072,7 @@
       "file_type": "code",
       "norm_label": "system",
       "source_file": "docs/convert_json.js",
-      "source_location": "L76"
+      "source_location": "L75"
     },
     {
       "id": "include_effectsmanager_glitch_active",
@@ -5161,7 +5161,7 @@
       "node_kind": "heading",
       "norm_label": "блок 5 — каскады и «рассвет»",
       "source_file": "README.md",
-      "source_location": "L1058"
+      "source_location": "L1060"
     },
     {
       "id": "include_networkmanager",
@@ -5695,7 +5695,7 @@
       "node_kind": "heading",
       "norm_label": "10. известные ограничения и возможные улучшения",
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L340"
+      "source_location": "L341"
     },
     {
       "id": "docs_handoff_11_правила_работы",
@@ -5707,7 +5707,7 @@
       "node_kind": "heading",
       "norm_label": "11. правила работы",
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L368"
+      "source_location": "L369"
     },
     {
       "id": "docs_handoff_12_готовый_промт_для_нового_агента",
@@ -5719,7 +5719,7 @@
       "node_kind": "heading",
       "norm_label": "12. готовыи промт для нового агента",
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L385"
+      "source_location": "L386"
     },
     {
       "id": "docs_handoff_1_что_это_за_проект",
@@ -5851,7 +5851,7 @@
       "node_kind": "heading",
       "norm_label": "9. чек-лист приемки на железе",
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L310"
+      "source_location": "L311"
     },
     {
       "id": "docs_handoff_handoff_x18_flowers",
@@ -6207,7 +6207,7 @@
       "node_kind": "heading",
       "norm_label": "10. текущии статус",
       "source_file": "README.md",
-      "source_location": "L841"
+      "source_location": "L842"
     },
     {
       "id": "readme_11_правила_разработки",
@@ -6219,7 +6219,7 @@
       "node_kind": "heading",
       "norm_label": "11. правила разработки",
       "source_file": "README.md",
-      "source_location": "L905"
+      "source_location": "L906"
     },
     {
       "id": "readme_13_перенос_проекта_в_другую_среду",
@@ -6231,7 +6231,7 @@
       "node_kind": "heading",
       "norm_label": "13. перенос проекта в другую среду",
       "source_file": "README.md",
-      "source_location": "L1123"
+      "source_location": "L1125"
     },
     {
       "id": "readme_1_что_это_за_проект_и_зачем_он_нужен",
@@ -6543,17 +6543,17 @@
       "node_kind": "heading",
       "norm_label": "почему очистка event-ом, а не delete в функции",
       "source_file": "README.md",
-      "source_location": "L821"
+      "source_location": "L819"
     },
     {
-      "id": "readme_часовой_пояс_и_локальное_время",
-      "label": "Часовой пояс и локальное время",
+      "id": "readme_часовой_пояс",
+      "label": "Часовой пояс",
       "_origin": "ast",
       "community": 7,
       "community_name": "x18.flowers — умный свет для цветочного стеллажа",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "часовои пояс и локальное время",
+      "norm_label": "часовои пояс",
       "source_file": "README.md",
       "source_location": "L762"
     },
@@ -6589,7 +6589,7 @@
       "node_kind": "heading",
       "norm_label": "12. журнал изменении",
       "source_file": "README.md",
-      "source_location": "L921"
+      "source_location": "L922"
     },
     {
       "id": "readme_5_математика_света_cie_1931",
@@ -6613,7 +6613,7 @@
       "node_kind": "heading",
       "norm_label": "home assistant — сущности полок и yandex smart home",
       "source_file": "README.md",
-      "source_location": "L1022"
+      "source_location": "L1024"
     },
     {
       "id": "readme_блок_1_фундамент",
@@ -6625,7 +6625,7 @@
       "node_kind": "heading",
       "norm_label": "блок 1 — фундамент",
       "source_file": "README.md",
-      "source_location": "L1113"
+      "source_location": "L1115"
     },
     {
       "id": "readme_блок_2_cie1931_и_ledpanel",
@@ -6637,7 +6637,7 @@
       "node_kind": "heading",
       "norm_label": "блок 2 — cie1931 и ledpanel",
       "source_file": "README.md",
-      "source_location": "L1105"
+      "source_location": "L1107"
     },
     {
       "id": "readme_блок_3_networkmanager",
@@ -6649,7 +6649,7 @@
       "node_kind": "heading",
       "norm_label": "блок 3 — networkmanager",
       "source_file": "README.md",
-      "source_location": "L1094"
+      "source_location": "L1096"
     },
     {
       "id": "readme_блок_4_роутинг_mqtt_и_anti_echo",
@@ -6661,7 +6661,7 @@
       "node_kind": "heading",
       "norm_label": "блок 4 — роутинг mqtt и anti-echo",
       "source_file": "README.md",
-      "source_location": "L1076"
+      "source_location": "L1078"
     },
     {
       "id": "readme_блок_6_дыхание_glitch_и_финализация",
@@ -6673,7 +6673,7 @@
       "node_kind": "heading",
       "norm_label": "блок 6 — «дыхание», glitch и финализация",
       "source_file": "README.md",
-      "source_location": "L1040"
+      "source_location": "L1042"
     },
     {
       "id": "readme_диагностика_самопроизвольного_выключения_и_retained_команды",
@@ -6685,7 +6685,7 @@
       "node_kind": "heading",
       "norm_label": "диагностика самопроизвольного выключения и retained-команды",
       "source_file": "README.md",
-      "source_location": "L956"
+      "source_location": "L957"
     },
     {
       "id": "readme_исправление_mqtt_эхо_петли_панелей",
@@ -6697,7 +6697,7 @@
       "node_kind": "heading",
       "norm_label": "исправление mqtt-эхо-петли панелеи",
       "source_file": "README.md",
-      "source_location": "L1010"
+      "source_location": "L1012"
     },
     {
       "id": "readme_передача_проекта_в_другую_среду",
@@ -6709,7 +6709,7 @@
       "node_kind": "heading",
       "norm_label": "передача проекта в другую среду",
       "source_file": "README.md",
-      "source_location": "L1000"
+      "source_location": "L1002"
     },
     {
       "id": "readme_приёмка_на_железе_и_заморозка_v1_0_0",
@@ -6721,7 +6721,7 @@
       "node_kind": "heading",
       "norm_label": "приемка на железе и заморозка v1.0.0",
       "source_file": "README.md",
-      "source_location": "L992"
+      "source_location": "L994"
     },
     {
       "id": "readme_режим_закат",
@@ -6733,7 +6733,7 @@
       "node_kind": "heading",
       "norm_label": "режим «закат»",
       "source_file": "README.md",
-      "source_location": "L923"
+      "source_location": "L924"
     },
     {
       "id": "readme_сохранение_индивидуальной_яркости_полок_в_nvs",
@@ -6745,7 +6745,7 @@
       "node_kind": "heading",
       "norm_label": "сохранение индивидуальнои яркости полок в nvs",
       "source_file": "README.md",
-      "source_location": "L939"
+      "source_location": "L940"
     },
     {
       "id": "readme_яркость_полок_в_телеметрии_и_mysql_через_node_red",
@@ -6757,7 +6757,7 @@
       "node_kind": "heading",
       "norm_label": "яркость полок в телеметрии и mysql через node-red",
       "source_file": "README.md",
-      "source_location": "L975"
+      "source_location": "L976"
     },
     {
       "id": "include_effectsmanager_effectsmanager_breathing",
@@ -7078,7 +7078,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "docs/convert_json.js",
-      "source_location": "L84",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -7090,7 +7090,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "docs/convert_json.js",
-      "source_location": "L67",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -10280,7 +10280,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L44",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -10291,7 +10291,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L48",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -10302,7 +10302,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L55",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -10313,7 +10313,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L63",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -10324,7 +10324,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L76",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -10335,7 +10335,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L77",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -10346,7 +10346,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L78",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -10368,7 +10368,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/convert_json.js",
-      "source_location": "L83",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -10478,7 +10478,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L310",
+      "source_location": "L311",
       "weight": 1.0
     },
     {
@@ -10489,7 +10489,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L340",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -10500,7 +10500,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L368",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -10522,7 +10522,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L385",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -11281,7 +11281,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1000",
+      "source_location": "L1002",
       "weight": 1.0
     },
     {
@@ -11292,7 +11292,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1010",
+      "source_location": "L1012",
       "weight": 1.0
     },
     {
@@ -11303,7 +11303,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1022",
+      "source_location": "L1024",
       "weight": 1.0
     },
     {
@@ -11314,7 +11314,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1040",
+      "source_location": "L1042",
       "weight": 1.0
     },
     {
@@ -11325,7 +11325,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1058",
+      "source_location": "L1060",
       "weight": 1.0
     },
     {
@@ -11336,7 +11336,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1076",
+      "source_location": "L1078",
       "weight": 1.0
     },
     {
@@ -11347,7 +11347,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1094",
+      "source_location": "L1096",
       "weight": 1.0
     },
     {
@@ -11358,7 +11358,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1105",
+      "source_location": "L1107",
       "weight": 1.0
     },
     {
@@ -11369,7 +11369,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1113",
+      "source_location": "L1115",
       "weight": 1.0
     },
     {
@@ -11380,7 +11380,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L923",
+      "source_location": "L924",
       "weight": 1.0
     },
     {
@@ -11391,7 +11391,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L939",
+      "source_location": "L940",
       "weight": 1.0
     },
     {
@@ -11402,7 +11402,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L956",
+      "source_location": "L957",
       "weight": 1.0
     },
     {
@@ -11413,7 +11413,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L975",
+      "source_location": "L976",
       "weight": 1.0
     },
     {
@@ -11424,7 +11424,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L992",
+      "source_location": "L994",
       "weight": 1.0
     },
     {
@@ -11638,7 +11638,7 @@
     },
     {
       "source": "readme_9_7_телеметрия_в_mysql_через_node_red",
-      "target": "readme_часовой_пояс_и_локальное_время",
+      "target": "readme_часовой_пояс",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11655,7 +11655,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L821",
+      "source_location": "L819",
       "weight": 1.0
     },
     {
@@ -11754,7 +11754,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L1123",
+      "source_location": "L1125",
       "weight": 1.0
     },
     {
@@ -11853,7 +11853,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L841",
+      "source_location": "L842",
       "weight": 1.0
     },
     {
@@ -11864,7 +11864,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L905",
+      "source_location": "L906",
       "weight": 1.0
     },
     {
@@ -11875,7 +11875,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L921",
+      "source_location": "L922",
       "weight": 1.0
     },
     {
@@ -14273,7 +14273,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/HANDOFF.md",
-      "source_location": "L373",
+      "source_location": "L374",
       "weight": 1.0
     },
     {
@@ -15544,7 +15544,7 @@
       "confidence_score": 0.95,
       "context": "Config",
       "source_file": "README.md",
-      "source_location": "L845",
+      "source_location": "L846",
       "weight": 1.0
     },
     {
@@ -15616,7 +15616,7 @@
       "confidence_score": 0.95,
       "context": "dutyToPercent",
       "source_file": "README.md",
-      "source_location": "L1107",
+      "source_location": "L1109",
       "weight": 1.0
     },
     {
@@ -15724,7 +15724,7 @@
       "confidence_score": 0.95,
       "context": "percentToDuty",
       "source_file": "README.md",
-      "source_location": "L1107",
+      "source_location": "L1109",
       "weight": 1.0
     },
     {
@@ -15760,7 +15760,7 @@
       "confidence_score": 0.95,
       "context": "publishStartWaveState()",
       "source_file": "README.md",
-      "source_location": "L1052",
+      "source_location": "L1054",
       "weight": 1.0
     },
     {
@@ -15772,7 +15772,7 @@
       "confidence_score": 0.95,
       "context": "publishSunriseState()",
       "source_file": "README.md",
-      "source_location": "L1072",
+      "source_location": "L1074",
       "weight": 1.0
     },
     {
@@ -15784,10 +15784,10 @@
       "confidence_score": 0.95,
       "context": "setEffectsManager()",
       "source_file": "README.md",
-      "source_location": "L1072",
+      "source_location": "L1074",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b6728dff122d79e872f3daa0a0dad1991312f673"
+  "built_at_commit": "a58cec6af159935c5e334e5cc1c3a568f02b27e2"
 }
