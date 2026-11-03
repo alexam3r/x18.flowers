@@ -88,7 +88,11 @@ FROM flowers_status;
 --   [mysqld]
 --   event_scheduler=ON
 
-CREATE EVENT IF NOT EXISTS ev_flowers_status_cleanup
+-- DROP + CREATE, а не CREATE EVENT IF NOT EXISTS: IF NOT EXISTS не обновляет
+-- тело уже существующего EVENT, и старый UTC-cutoff остался бы активным.
+DROP EVENT IF EXISTS ev_flowers_status_cleanup;
+
+CREATE EVENT ev_flowers_status_cleanup
   ON SCHEDULE EVERY 1 HOUR
   COMMENT 'Удаляет телеметрию x18.flowers старше 72 часов'
   DO

@@ -747,7 +747,9 @@ MQTT in (home/flat7/flowers/status)
    подключается Node-RED. Если таблица `flowers_status` уже была создана старой
    версией, `CREATE TABLE IF NOT EXISTS` её не изменит: сначала переименуйте
    старую таблицу (`RENAME TABLE flowers_status TO flowers_status_v1;`) или
-   удалите её, если старые данные не нужны.
+   удалите её, если старые данные не нужны. SQL пересоздаёт EVENT через
+   `DROP EVENT` + `CREATE EVENT`: `CREATE EVENT IF NOT EXISTS` не обновляет
+   тело уже существующего события.
 2. Проверить планировщик событий: `SHOW VARIABLES LIKE 'event_scheduler';`.
    Если `OFF` — включить `SET GLOBAL event_scheduler = ON;` (нужны права) или
    добавить `event_scheduler=ON` в `my.cnf`.
