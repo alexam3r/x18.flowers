@@ -3,6 +3,7 @@
 -- Выполнить в базе, к которой подключается Node-RED (например, `USE flowers;`).
 -- Время хранится в UTC: Node-RED передаёт created_at в UTC, поэтому EVENT
 -- очистки и запросы не зависят от часового пояса сессии MySQL.
+-- Для локального времени Москвы ниже создаётся VIEW flowers_status_local.
 --
 -- ВАЖНО: если таблица flowers_status уже создана старой версией
 -- (колонки uptime и p1..p5-строки), CREATE TABLE IF NOT EXISTS её не изменит.
@@ -41,6 +42,41 @@ CREATE TABLE IF NOT EXISTS flowers_status (
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci
   COMMENT='Телеметрия x18.flowers, хранение 72 часа';
+
+-- created_at в таблице — UTC. Для Москвы (+03:00, без перехода на летнее
+-- время) удобно смотреть локальное представление. CONVERT_TZ с числовыми
+-- смещениями работает без загруженных timezone-таблиц MySQL.
+CREATE OR REPLACE VIEW flowers_status_local AS
+SELECT
+  id,
+  created_at AS created_at_utc,
+  CONVERT_TZ(created_at, '+00:00', '+03:00') AS created_at_local,
+  free_ram,
+  uptime_s,
+  sunrise_mode,
+  fade_s,
+  int_s,
+  brightness,
+  p1_on,
+  p1_brightness,
+  p2_on,
+  p2_brightness,
+  p3_on,
+  p3_brightness,
+  p4_on,
+  p4_brightness,
+  p5_on,
+  p5_brightness
+FROM flowers_status;
+
+-- Если раньше в created_at уже писали московское время костылём
+-- `Date.now() + 3h`, перед переходом на UTC переведите старые строки
+-- (остановите Node-RED, сделайте backup):
+--   UPDATE flowers_status
+--   SET created_at = created_at - INTERVAL 3 HOUR;
+-- Если история не нужна, проще: TRUNCATE TABLE flowers_status;
+-- Не применяйте UPDATE к смешанным данным: сначала убедитесь, что все
+-- строки писались в одном часовом поясе.
 
 -- Проверить планировщик событий:
 --   SHOW VARIABLES LIKE 'event_scheduler';

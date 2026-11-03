@@ -1,17 +1,17 @@
-# Graph Report - flowers  (2026-11-02)
+# Graph Report - flowers  (2026-11-03)
 
 ## Corpus Check
-- 20 files · ~24,352 words
+- 20 files · ~24,746 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .ini 1)
 
 ## Summary
-- 520 nodes · 751 edges · 27 communities (25 shown, 2 thin omitted)
+- 521 nodes · 752 edges · 26 communities (23 shown, 3 thin omitted)
 - Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 125 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `12cabf04`
+- Built from commit: `b6728dff`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -36,7 +36,6 @@
 - FlowersNetworkManager::publishAllStates
 - FlowersNetworkManager::update
 - FlowersNetworkManager::handleMessage
-- src/main.cpp
 - LedPanel.cpp
 - String
 - .cancelSunset
@@ -70,11 +69,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (27 total, 2 thin omitted)
+## Communities (26 total, 3 thin omitted)
 
 ### Community 0 - "Config"
-Cohesion: 0.09
-Nodes (16): Config, _panelBrightness, _prefs, _settings, PanelBrightnessSettings, globalPercent, panelPercent, version (+8 more)
+Cohesion: 0.06
+Nodes (28): Config, _panelBrightness, _prefs, _settings, DeviceSettings, fadeTimeSec, waveIntervalSec, PanelBrightnessSettings (+20 more)
 
 ### Community 1 - "docs/main.cpp"
 Cohesion: 0.08
@@ -97,12 +96,12 @@ Cohesion: 0.07
 Nodes (26): GlitchManager, active, effectEndTime, nextFlickerTime, nextGlitchTime, originalDuty, targetPanelIndex, SunriseManager (+18 more)
 
 ### Community 7 - "x18.flowers — умный свет для цветочного стеллажа"
-Cohesion: 0.05
-Nodes (41): 10. Текущий статус, 11. Правила разработки, 12. Журнал изменений, 13. Перенос проекта в другую среду, 1. Что это за проект и зачем он нужен, 2. Целевой функционал, 3.1. Состав, 3.2. Распиновка (+33 more)
+Cohesion: 0.07
+Nodes (30): 10. Текущий статус, 11. Правила разработки, 13. Перенос проекта в другую среду, 1. Что это за проект и зачем он нужен, 2. Целевой функционал, 3.1. Состав, 3.2. Распиновка, 3.3. ШИМ (+22 more)
 
 ### Community 8 - "12. Журнал изменений"
-Cohesion: 0.13
-Nodes (6): clampPercent(), dutyToPercent(), percentToDuty(), percentToLuminance(), 5. Математика света: CIE 1931, Блок 2 — CIE1931 и LedPanel
+Cohesion: 0.07
+Nodes (19): clampPercent(), dutyToPercent(), percentToDuty(), percentToLuminance(), 12. Журнал изменений, 5. Математика света: CIE 1931, Home Assistant — сущности полок и Yandex Smart Home, Блок 1 — фундамент (+11 more)
 
 ### Community 9 - "EffectsManager"
 Cohesion: 0.06
@@ -141,24 +140,16 @@ Cohesion: 0.17
 Nodes (4): EffectsManager::begin(), EffectsManager::cancelBreathingWave(), EffectsManager::finishBreathingWave(), EffectsManager::update()
 
 ### Community 18 - "FlowersNetworkManager::publishAllStates"
-Cohesion: 0.25
-Nodes (4): Блок 5 — каскады и «Рассвет», Блок 6 — «Дыхание», Glitch и финализация, FlowersNetworkManager::handlePanelPower(), FlowersNetworkManager::publishAllStates()
-
-### Community 19 - "FlowersNetworkManager::update"
-Cohesion: 0.22
-Nodes (5): FlowersNetworkManager::checkWatchdog(), FlowersNetworkManager::handleFadeTime(), FlowersNetworkManager::handleInterval(), FlowersNetworkManager::handleReboot(), FlowersNetworkManager::update()
-
-### Community 21 - "src/main.cpp"
-Cohesion: 0.14
-Nodes (12): DeviceSettings, fadeTimeSec, waveIntervalSec, FlowersNetworkManager, LedPanel, resetReasonName(), initPanels(), printBootInfo() (+4 more)
+Cohesion: 0.29
+Nodes (3): Блок 5 — каскады и «Рассвет», FlowersNetworkManager::handlePanelPower(), FlowersNetworkManager::publishAllStates()
 
 ### Community 22 - "LedPanel.cpp"
 Cohesion: 0.22
 Nodes (7): LedPanel::applyPercent(), LedPanel::begin(), LedPanel::fadeTo(), LedPanel::finishSunset(), LedPanel::setRawPwm(), LedPanel::setSunsetPercent(), LedPanel::update()
 
 ### Community 23 - "String"
-Cohesion: 0.27
-Nodes (4): FlowersNetworkManager::handleGlobalBrightness(), FlowersNetworkManager::handlePanelBrightness(), parseFloat(), parseLong()
+Cohesion: 0.22
+Nodes (7): FlowersNetworkManager::handleFadeTime(), FlowersNetworkManager::handleGlobalBrightness(), FlowersNetworkManager::handleInterval(), FlowersNetworkManager::handlePanelBrightness(), FlowersNetworkManager::handleReboot(), parseFloat(), parseLong()
 
 ### Community 24 - ".cancelSunset"
 Cohesion: 0.25
@@ -174,23 +165,23 @@ Nodes (4): LedPanel::cancelBreathing(), LedPanel::setBrightnessPercent(), LedPan
 
 ## Knowledge Gaps
 - **97 isolated node(s):** `_pin`, `_id`, `_channel`, `_currentDuty`, `_targetDuty` (+92 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 286 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 287 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `EffectsManager` connect `EffectsManager` to `Wave`, `.cancelBreathingWave`, `EffectsManager.cpp`, `BreathingWave`, `Glitch`, `.resetBreathingSchedule`, `src/main.cpp`, `.cancelSunset`?**
+- **Why does `EffectsManager` connect `EffectsManager` to `Config`, `Wave`, `.cancelBreathingWave`, `EffectsManager.cpp`, `BreathingWave`, `Glitch`, `.resetBreathingSchedule`, `.cancelSunset`?**
   _High betweenness centrality (0.230) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `Config` (e.g. with `Блок 1: Аудит `docs/main.cpp`, настройка сборки и выделение `Secrets.h` + `Config`` and `10. Текущий статус`) actually correct?**
   _`Config` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `_pin`, `_id`, `_channel` to the rest of the system?**
   _97 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Config` be split into smaller, more focused modules?**
-  _Cohesion score 0.08870967741935484 - nodes in this community are weakly interconnected._
-- **Why does `FlowersNetworkManager` connect `FlowersNetworkManager` to `Config`, `PRD.md`, `РАЗДЕЛ 2. Полное Техническое Задание (PRD)`, `FlowersNetworkManager::publishAllStates`, `FlowersNetworkManager::update`, `FlowersNetworkManager::handleMessage`, `String`, `LedPanel`?**
+  _Cohesion score 0.057329462989840346 - nodes in this community are weakly interconnected._
+- **Why does `FlowersNetworkManager` connect `FlowersNetworkManager` to `Config`, `PRD.md`, `12. Журнал изменений`, `РАЗДЕЛ 2. Полное Техническое Задание (PRD)`, `FlowersNetworkManager::publishAllStates`, `FlowersNetworkManager::update`, `FlowersNetworkManager::handleMessage`, `String`, `LedPanel`?**
   _High betweenness centrality (0.201) - this node is a cross-community bridge._
 - **Should `docs/main.cpp` be split into smaller, more focused modules?**
   _Cohesion score 0.08282828282828283 - nodes in this community are weakly interconnected._
-- **Why does `Config` connect `Config` to `WaveAnimation`, `src/main.cpp`, `x18.flowers — умный свет для цветочного стеллажа`?**
-  _High betweenness centrality (0.147) - this node is a cross-community bridge._
+- **Why does `Config` connect `Config` to `WaveAnimation`, `x18.flowers — умный свет для цветочного стеллажа`?**
+  _High betweenness centrality (0.148) - this node is a cross-community bridge._

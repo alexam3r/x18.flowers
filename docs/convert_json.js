@@ -12,8 +12,12 @@
  * поэтому DELETE в этой функции намеренно отсутствует.
  *
  * created_at формируется в UTC (ISO 8601 -> DATETIME(3)). Часовой пояс
- * Node-RED на результат не влияет; отображать время нужно с переводом
- * в локальную зону на стороне Grafana/HA.
+ * Node-RED на результат не влияет.
+ *
+ * НЕ добавляйте сюда московские +3 часа: EVENT очистки и все запросы
+ * сравнивают created_at с UTC. Для локального времени используйте
+ * представление flowers_status_local (см. docs/flowers.sql) или переводите
+ * время при отображении в Grafana/HA.
  */
 
 let data = msg.payload;
@@ -73,6 +77,8 @@ const system = asObject(data.system);
 const config = asObject(data.config);
 const panels = asObject(data.panels);
 
+// UTC on purpose: the cleanup EVENT and SQL queries use UTC. Local +03:00
+// is a presentation concern (flowers_status_local view), not a stored value.
 const createdAt = new Date().toISOString().slice(0, 23).replace('T', ' ');
 const panelParams = [1, 2, 3, 4, 5].flatMap((index) => {
     const panel = toPanel(panels['p' + index]);

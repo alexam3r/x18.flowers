@@ -756,12 +756,52 @@ MQTT in (home/flat7/flowers/status)
 4. Проверить вставку:
 
    ```sql
-   SELECT * FROM flowers_status ORDER BY id DESC LIMIT 1;
+   SELECT * FROM flowers_status_local ORDER BY id DESC LIMIT 1;
    ```
 
-Время в `created_at` хранится в **UTC** (`DATETIME(3)`): функция формирует его
-из `toISOString()`, поэтому часовой пояс Node-RED не влияет на данные.
-Переводить в локальное время нужно при отображении (Grafana, HA, SQL-запрос).
+#### Часовой пояс и локальное время
+
+`created_at` хранится в **UTC** (`DATETIME(3)`), функция формирует его из
+`toISOString()`. Если смотреть сырую таблицу из Москвы, время будет казаться
+на 3 часа меньше — это нормально, а не ошибка записи.
+
+Почему нельзя прибавлять `+3` в JavaScript:
+
+- EVENT очистки сравнивает `created_at` с `UTC_TIMESTAMP(3)`. Если писать в
+  `created_at` московское время, EVENT удалит строки примерно на 3 часа
+  раньше — retention станет ~69 часов вместо 72;
+- в таблице окажутся данные с разным смыслом, и непонятно, как их сравнивать;
+- при смене часового пояса/переходе на летнее время всё сломается.
+
+Правильно хранить UTC, а локальное время показывать представлением
+`flowers_status_local` из [`docs/flowers.sql`](docs/flowers.sql):
+
+```sql
+SELECT created_at_local, free_ram, uptime_s, p1_on, p1_brightness
+FROM flowers_status_local
+ORDER BY id DESC
+LIMIT 10;
+```
+
+В представлении есть и `created_at_utc`, и `created_at_local`
+(`CONVERT_TZ(created_at, '+00:00', '+03:00')`). Смещения работают без
+загруженных timezone-таблиц MySQL; Москва живёт в фиксированном `+03:00`.
+
+Если ты уже писал `+3` в `created_at`:
+
+1. Верни в функции строку
+   `new Date().toISOString().slice(0, 23).replace('T', ' ')`.
+2. Останови Node-RED, сделай backup таблицы.
+3. Один раз переведи старые строки:
+   ```sql
+   UPDATE flowers_status
+   SET created_at = created_at - INTERVAL 3 HOUR;
+   ```
+   Если история не нужна — `TRUNCATE TABLE flowers_status;`.
+4. Только после этого используй `flowers_status_local`.
+
+Не применяй `UPDATE` к смешанным данным: сначала убедись, что все строки
+писались в одном часовом поясе.
 
 Поля таблицы повторяют JSON: `free_ram`, `uptime_s`, `sunrise_mode`, `fade_s`,
 `int_s`, `brightness`, а для каждой полки — `pN_on` (`1`/`0`) и
